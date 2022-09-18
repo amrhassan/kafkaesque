@@ -1,0 +1,8 @@
+[package]
+name = "kafkaesque"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+author = "Amr Hassan <amr.hassan@gmail.com>"
+
+[dependencies]
