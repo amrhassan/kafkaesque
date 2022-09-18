@@ -3,6 +3,11 @@ name = "kafkaesque"
 version = "0.1.0"
 edition = "2021"
 license = "MIT"
-author = "Amr Hassan <amr.hassan@gmail.com>"
+authors = ["Amr Hassan <amr.hassan@gmail.com>"]
 
 [dependencies]
+derive_more = "0.99.17"
+async-trait = "0.1.57"
+tokio = { version = "1.21.1", features = ["io-util"] }
+zigzag = "0.1.0"
+uuid = "1.1.2"
