@@ -1,29 +1,30 @@
 use crate::io::{Read, Write};
+use crate::Result;
 use derive_more::{Display, From, Into};
-use std::{convert::identity, io};
+use std::convert::identity;
 use tokio::io::{AsyncRead, AsyncReadExt, AsyncWrite, AsyncWriteExt};
 use zigzag::ZigZag;
 
 #[derive(Debug, Copy, Clone, Display, From, Into)]
-pub struct Boolean(bool);
+pub struct Boolean(pub bool);
 
 #[derive(Debug, Copy, Clone, Display, From, Into)]
-pub struct Int8(i8);
+pub struct Int8(pub i8);
 
 #[derive(Debug, Copy, Clone, Display, From, Into)]
-pub struct Int16(i16);
+pub struct Int16(pub i16);
 
 #[derive(Debug, Copy, Clone, Display, From, Into)]
-pub struct Int32(i32);
+pub struct Int32(pub i32);
 
 #[derive(Debug, Copy, Clone, Display, From, Into)]
-pub struct Int64(i64);
+pub struct Int64(pub i64);
 
 #[derive(Debug, Copy, Clone, Display, From, Into)]
-pub struct Float64(f64);
+pub struct Float64(pub f64);
 
 #[derive(Debug, Copy, Clone, Display, From, Into)]
-pub struct UInt32(u32);
+pub struct UInt32(pub u32);
 
 #[derive(Debug, Copy, Clone, Display, From, Into)]
 pub struct VarInt(i32);
@@ -38,10 +39,10 @@ macro_rules! primitive_io_impl {
     ($SelfT:ty, $write_map:expr, $write:expr, $read:expr, $read_map:expr,) => {
         #[async_trait::async_trait]
         impl $crate::io::Write for $SelfT {
-            async fn write(
+            async fn write_to(
                 &self,
                 mut sink: impl tokio::io::AsyncWrite + Send + Sync + Unpin,
-            ) -> tokio::io::Result<()> {
+            ) -> Result<()> {
                 let written = ($write_map)(self.0);
                 $write(&mut sink, written).await?;
                 Ok(())
@@ -51,9 +52,9 @@ macro_rules! primitive_io_impl {
         #[async_trait::async_trait]
         #[allow(clippy::redundant_closure_call)]
         impl $crate::io::Read for $SelfT {
-            async fn read(
+            async fn read_from(
                 mut source: impl tokio::io::AsyncRead + Send + Sync + Unpin,
-            ) -> tokio::io::Result<Self> {
+            ) -> Result<Self> {
                 let read = ($read)(&mut source).await?;
                 let s = $read_map(read);
                 Ok(s.into())
@@ -136,7 +137,7 @@ primitive_io_impl!(
 
 #[async_trait::async_trait]
 impl Read for Uuid {
-    async fn read(mut source: impl AsyncRead + Send + Sync + Unpin) -> io::Result<Self> {
+    async fn read_from(mut source: impl AsyncRead + Send + Sync + Unpin) -> Result<Self> {
         let mut buf = [0; 16];
         source.read_exact(&mut buf).await?;
         Ok(uuid::Uuid::from_bytes(buf).into())
@@ -145,7 +146,7 @@ impl Read for Uuid {
 
 #[async_trait::async_trait]
 impl Write for Uuid {
-    async fn write(&self, mut sink: impl AsyncWrite + Send + Sync + Unpin) -> io::Result<()> {
+    async fn write_to(&self, mut sink: impl AsyncWrite + Send + Sync + Unpin) -> Result<()> {
         sink.write_all(self.0.as_bytes()).await?;
         Ok(())
     }
