@@ -49,6 +49,7 @@ macro_rules! primitive_io_impl {
         }
 
         #[async_trait::async_trait]
+        #[allow(clippy::redundant_closure_call)]
         impl $crate::io::Read for $SelfT {
             async fn read(
                 mut source: impl tokio::io::AsyncRead + Send + Sync + Unpin,
@@ -71,18 +72,18 @@ primitive_io_impl!(
 
 primitive_io_impl!(
     VarInt,
-    (|n| <i32 as ZigZag>::encode(n)),
+    <i32 as ZigZag>::encode,
     AsyncWriteExt::write_u32,
     AsyncReadExt::read_u32,
-    (|un| <i32 as ZigZag>::decode(un)),
+    <i32 as ZigZag>::decode,
 );
 
 primitive_io_impl!(
     VarLong,
-    (|n| <i64 as ZigZag>::encode(n)),
+    <i64 as ZigZag>::encode,
     AsyncWriteExt::write_u64,
     AsyncReadExt::read_u64,
-    (|un| <i64 as ZigZag>::decode(un)),
+    <i64 as ZigZag>::decode,
 );
 
 primitive_io_impl!(
