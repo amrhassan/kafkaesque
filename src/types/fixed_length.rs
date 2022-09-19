@@ -1,9 +1,7 @@
-use crate::io::{Read, Write};
 use crate::Result;
 use derive_more::{Display, From, Into};
 use std::convert::identity;
 use tokio::io::{AsyncRead, AsyncReadExt, AsyncWrite, AsyncWriteExt};
-use zigzag::ZigZag;
 
 #[derive(Debug, Copy, Clone, Display, From, Into)]
 pub struct Boolean(pub bool);
@@ -29,6 +27,9 @@ pub struct UInt32(pub u32);
 #[derive(Debug, Copy, Clone, Display, From, Into)]
 pub struct VarInt(i32);
 
+#[derive(Debug, Clone, Display, From, Into)]
+pub struct UnsignedVarInt(pub u64);
+
 #[derive(Debug, Copy, Clone, Display, From, Into)]
 pub struct VarLong(i64);
 
@@ -41,10 +42,10 @@ macro_rules! primitive_io_impl {
         impl $crate::io::Write for $SelfT {
             async fn write_to(
                 &self,
-                mut sink: impl tokio::io::AsyncWrite + Send + Sync + Unpin,
+                mut sink: impl tokio::io::AsyncWrite + Send + Unpin,
             ) -> Result<()> {
-                let written = ($write_map)(self.0);
-                $write(&mut sink, written).await?;
+                let to_be_written = ($write_map)(self.0);
+                $write(&mut sink, to_be_written).await?;
                 Ok(())
             }
         }
@@ -53,7 +54,7 @@ macro_rules! primitive_io_impl {
         #[allow(clippy::redundant_closure_call)]
         impl $crate::io::Read for $SelfT {
             async fn read_from(
-                mut source: impl tokio::io::AsyncRead + Send + Sync + Unpin,
+                mut source: impl tokio::io::AsyncRead + Send + Unpin,
             ) -> Result<Self> {
                 let read = ($read)(&mut source).await?;
                 let s = $read_map(read);
@@ -73,18 +74,34 @@ primitive_io_impl!(
 
 primitive_io_impl!(
     VarInt,
-    <i32 as ZigZag>::encode,
-    AsyncWriteExt::write_u32,
-    AsyncReadExt::read_u32,
-    <i32 as ZigZag>::decode,
+    identity,
+    integer_encoding::VarIntAsyncWriter::write_varint_async,
+    integer_encoding::VarIntAsyncReader::read_varint_async::<i32>,
+    identity,
 );
 
 primitive_io_impl!(
     VarLong,
-    <i64 as ZigZag>::encode,
-    AsyncWriteExt::write_u64,
-    AsyncReadExt::read_u64,
-    <i64 as ZigZag>::decode,
+    identity,
+    integer_encoding::VarIntAsyncWriter::write_varint_async,
+    integer_encoding::VarIntAsyncReader::read_varint_async::<i64>,
+    identity,
+);
+
+primitive_io_impl!(
+    UnsignedVarInt,
+    identity,
+    integer_encoding::VarIntAsyncWriter::write_varint_async,
+    integer_encoding::VarIntAsyncReader::read_varint_async::<u64>,
+    identity,
+);
+
+primitive_io_impl!(
+    Uuid,
+    uuid::Uuid::into_bytes,
+    write_uuid_bytes,
+    read_uuid_bytes,
+    uuid::Uuid::from_bytes,
 );
 
 primitive_io_impl!(
@@ -135,19 +152,13 @@ primitive_io_impl!(
     identity,
 );
 
-#[async_trait::async_trait]
-impl Read for Uuid {
-    async fn read_from(mut source: impl AsyncRead + Send + Sync + Unpin) -> Result<Self> {
-        let mut buf = [0; 16];
-        source.read_exact(&mut buf).await?;
-        Ok(uuid::Uuid::from_bytes(buf).into())
-    }
+async fn read_uuid_bytes(mut reader: impl AsyncRead + Send + Unpin) -> Result<[u8; 16]> {
+    let mut buf = [0; 16];
+    reader.read_exact(&mut buf).await?;
+    Ok(buf)
 }
 
-#[async_trait::async_trait]
-impl Write for Uuid {
-    async fn write_to(&self, mut sink: impl AsyncWrite + Send + Sync + Unpin) -> Result<()> {
-        sink.write_all(self.0.as_bytes()).await?;
-        Ok(())
-    }
+async fn write_uuid_bytes(mut writer: impl AsyncWrite + Send + Unpin, bs: [u8; 16]) -> Result<()> {
+    writer.write_all(&bs).await?;
+    Ok(())
 }

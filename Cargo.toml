@@ -9,6 +9,7 @@ authors = ["Amr Hassan <amr.hassan@gmail.com>"]
 derive_more = "0.99.17"
 async-trait = "0.1.57"
 tokio = { version = "1.21.1", features = ["io-util"] }
-zigzag = "0.1.0"
+tokio-util = { version = "0.7.4", features = ["compat"] }
 uuid = "1.1.2"
 thiserror = "1.0.35"
+integer-encoding = { version = "3.0.4", features = ["tokio_async"] }
