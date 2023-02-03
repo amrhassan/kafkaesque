@@ -7,7 +7,6 @@ authors = ["Amr Hassan <amr.hassan@gmail.com>"]
 
 [dependencies]
 derive_more = "0.99.17"
-async-trait = "0.1.57"
 tokio = { version = "1.21.1", features = ["io-util"] }
 tokio-util = { version = "0.7.4", features = ["compat"] }
 uuid = "1.1.2"

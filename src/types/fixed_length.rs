@@ -1,5 +1,6 @@
 use crate::Result;
 use derive_more::{Display, From, Into};
+use integer_encoding::VarIntAsyncReader;
 use std::convert::identity;
 use tokio::io::{AsyncRead, AsyncReadExt, AsyncWrite, AsyncWriteExt};
 
@@ -38,25 +39,23 @@ pub struct Uuid(uuid::Uuid);
 
 macro_rules! primitive_io_impl {
     ($SelfT:ty, $write_map:expr, $write:expr, $read:expr, $read_map:expr,) => {
-        #[async_trait::async_trait]
         impl $crate::io::Write for $SelfT {
             async fn write_to(
                 &self,
-                mut sink: impl tokio::io::AsyncWrite + Send + Unpin,
+                sink: &mut (dyn tokio::io::AsyncWrite + Send + Unpin),
             ) -> Result<()> {
                 let to_be_written = ($write_map)(self.0);
-                $write(&mut sink, to_be_written).await?;
+                $write(sink, to_be_written).await?;
                 Ok(())
             }
         }
 
-        #[async_trait::async_trait]
         #[allow(clippy::redundant_closure_call)]
         impl $crate::io::Read for $SelfT {
             async fn read_from(
-                mut source: impl tokio::io::AsyncRead + Send + Unpin,
+                source: &mut (dyn tokio::io::AsyncRead + Send + Unpin),
             ) -> Result<Self> {
-                let read = ($read)(&mut source).await?;
+                let read = ($read)(source).await?;
                 let s = $read_map(read);
                 Ok(s.into())
             }
@@ -75,24 +74,24 @@ primitive_io_impl!(
 primitive_io_impl!(
     VarInt,
     identity,
-    integer_encoding::VarIntAsyncWriter::write_varint_async,
-    integer_encoding::VarIntAsyncReader::read_varint_async::<i32>,
+    write_varint_bytes,
+    read_varint_bytes::<i32>,
     identity,
 );
 
 primitive_io_impl!(
     VarLong,
     identity,
-    integer_encoding::VarIntAsyncWriter::write_varint_async,
-    integer_encoding::VarIntAsyncReader::read_varint_async::<i64>,
+    write_varint_bytes,
+    read_varint_bytes::<i64>,
     identity,
 );
 
 primitive_io_impl!(
     UnsignedVarInt,
     identity,
-    integer_encoding::VarIntAsyncWriter::write_varint_async,
-    integer_encoding::VarIntAsyncReader::read_varint_async::<u64>,
+    write_varint_bytes,
+    read_varint_bytes::<u64>,
     identity,
 );
 
@@ -161,4 +160,21 @@ async fn read_uuid_bytes(mut reader: impl AsyncRead + Send + Unpin) -> Result<[u
 async fn write_uuid_bytes(mut writer: impl AsyncWrite + Send + Unpin, bs: [u8; 16]) -> Result<()> {
     writer.write_all(&bs).await?;
     Ok(())
+}
+
+async fn write_varint_bytes(
+    mut writer: impl AsyncWrite + Send + Unpin,
+    n: impl integer_encoding::VarInt,
+) -> Result<usize> {
+    let mut buf = [0_u8; 10];
+    let b = n.encode_var(&mut buf);
+    writer.write_all(&buf[0..b]).await?;
+    Ok(b)
+}
+
+async fn read_varint_bytes<VI: integer_encoding::VarInt>(
+    mut reader: impl AsyncRead + Send + Unpin,
+) -> Result<VI> {
+    let n = reader.read_varint_async().await?;
+    Ok(n)
 }
