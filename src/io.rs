@@ -2,6 +2,7 @@ use crate::Result;
 use tokio::io::{AsyncRead, AsyncWrite};
 
 pub trait Write {
+    fn calculate_size(&self) -> i32;
     async fn write_to(&self, writer: &mut (dyn AsyncWrite + Send + Unpin)) -> Result<()>;
 }
 

@@ -34,6 +34,9 @@ macro_rules! fixed_length_io_impl {
             const SIZE: i32 = $size;
         }
         impl $crate::io::Write for $SelfT {
+            fn calculate_size(&self) -> i32 {
+                $size
+            }
             async fn write_to(
                 &self,
                 sink: &mut (dyn tokio::io::AsyncWrite + Send + Unpin),

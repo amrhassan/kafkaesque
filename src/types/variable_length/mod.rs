@@ -8,4 +8,8 @@ mod string;
 
 pub use compact_string::*;
 pub use numbers::*;
+pub use request::*;
+pub use request_messages::*;
+pub use response::*;
+pub use response_messages::*;
 pub use string::*;

@@ -15,12 +15,10 @@ pub struct VarLong(i64);
 
 macro_rules! var_number_io_impl {
     ($SelfT:ty, $size:expr, $write_map:expr, $write:expr, $read:expr, $read_map:expr,) => {
-        impl $crate::io::VariableLength for $SelfT {
+        impl $crate::io::Write for $SelfT {
             fn calculate_size(&self) -> i32 {
                 $size(self)
             }
-        }
-        impl $crate::io::Write for $SelfT {
             async fn write_to(
                 &self,
                 sink: &mut (dyn tokio::io::AsyncWrite + Send + Unpin),

@@ -21,6 +21,9 @@ impl Read for String {
 }
 
 impl Write for String {
+    fn calculate_size(&self) -> i32 {
+        todo!()
+    }
     async fn write_to(&self, writer: &mut (dyn AsyncWrite + Send + Unpin)) -> Result<()> {
         todo!()
         // let len = Int16::from(self.0.len() as i16);
