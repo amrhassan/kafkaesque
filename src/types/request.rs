@@ -8,11 +8,12 @@ pub struct Request<M> {
 
 impl<M: RequestMessage> Write for Request<M> {
     async fn write_to(&self, writer: &mut (dyn AsyncWrite + Send + Unpin)) -> Result<()> {
-        Int32::from(self.message.calculate_size())
-            .write_to(writer)
-            .await?;
-        self.message.write_to(writer).await?;
-        Ok(())
+        todo!()
+        // Int32::from(self.message.calculate_size())
+        //     .write_to(writer)
+        //     .await?;
+        // self.message.write_to(writer).await?;
+        // Ok(())
     }
 }
 
