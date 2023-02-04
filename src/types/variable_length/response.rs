@@ -1,6 +1,6 @@
 use super::{ApiKey, ResponseMessage};
 use crate::{
-    io::{FixedLength, VariableLength, Write},
+    io::{FixedLength, Write},
     types::{Int16, Int32},
     Result,
 };

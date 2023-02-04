@@ -13,8 +13,3 @@ pub trait Read: Sized {
 pub trait FixedLength {
     const SIZE: i32;
 }
-
-pub trait VariableLength {
-    /// Calculate the required size in bytes
-    fn calculate_size(&self) -> i32;
-}

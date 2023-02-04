@@ -8,7 +8,7 @@ mod broker;
 mod client;
 mod errors;
 mod io;
-mod types;
+pub mod types;
 
 pub use client::Client;
 pub use errors::Result;

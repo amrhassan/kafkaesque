@@ -1,6 +1,6 @@
 use super::ApiKey;
 use crate::{
-    io::{Read, VariableLength, Write},
+    io::{Read, Write},
     types::{Int16, Int32},
     Result,
 };

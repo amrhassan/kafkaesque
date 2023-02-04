@@ -1,9 +1,12 @@
 use crate::{
     io::{Read, Write},
-    types::{ApiVersionsRequest, CorrelationId, ErrorCode, Request},
+    types::{ApiVersionsRequest, CorrelationId, ErrorCode, Int32, RequestHeader, RequestMessage},
     Result,
 };
-use std::sync::atomic::{AtomicI32, Ordering};
+use std::{
+    fmt::Debug,
+    sync::atomic::{AtomicI32, Ordering},
+};
 use tokio::io::AsyncWriteExt;
 use tokio::{
     io::{AsyncReadExt, BufStream, BufWriter},
@@ -12,29 +15,46 @@ use tokio::{
 use tracing::debug;
 
 pub struct Client {
-    next_cid: AtomicI32,
+    next_cid: i32,
     stream: BufStream<TcpStream>,
 }
 
 impl Client {
     pub async fn connect(addr: impl ToSocketAddrs) -> Result<Self> {
         let c = Client {
-            next_cid: AtomicI32::new(0),
+            next_cid: 0,
             stream: BufStream::new(TcpStream::connect(addr).await?),
         };
         Ok(c)
     }
 
-    pub async fn api_versions(&mut self) -> Result<()> {
-        let req = Request::new(ApiVersionsRequest::new(self.get_next_cid()));
-        req.write_to(&mut self.stream).await?;
+    pub async fn send<M: RequestMessage + Write + Debug>(&mut self, message: M) -> Result<()> {
+        let header = self.generate_header::<M>();
+        let size = header.calculate_size() + message.calculate_size();
+
+        debug!("Sending request [size={size},header={header:?},message={message:?}]");
+
+        Int32::from(size).write_to(&mut self.stream).await?;
+        header.write_to(&mut self.stream).await?;
+        message.write_to(&mut self.stream).await?;
         self.stream.flush().await?;
-        let err_code = ErrorCode::read_from(&mut self.stream).await?;
-        debug!("Got err_code: {:?}", err_code);
+
+        // let err_code = ErrorCode::read_from(&mut self.stream).await?;
+        // debug!("Got err_code: {:?}", err_code);
         Ok(())
     }
 
-    fn get_next_cid(&self) -> CorrelationId {
-        CorrelationId::from(self.next_cid.fetch_add(1, Ordering::Relaxed))
+    fn generate_header<M: RequestMessage>(&mut self) -> RequestHeader {
+        RequestHeader {
+            api_key: M::API_KEY,
+            api_version: M::API_VERSION,
+            cid: self.get_next_cid(),
+        }
+    }
+
+    fn get_next_cid(&mut self) -> CorrelationId {
+        let cid = CorrelationId::from(self.next_cid);
+        self.next_cid += 1;
+        cid
     }
 }
