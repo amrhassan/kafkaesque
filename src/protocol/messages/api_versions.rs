@@ -23,11 +23,12 @@ impl Write for ApiVersionsRequest {
     }
 }
 
+#[derive(Debug)]
 pub struct ApiVersionsResponse {
-    pub err_code: ErrorCode,
     pub api_keys: Vec<ApiKeyVersioned>,
 }
 
+#[derive(Debug)]
 pub struct ApiKeyVersioned {
     pub api_key: ApiKey,
     pub min_version: i16,
@@ -40,6 +41,15 @@ impl Read for ApiKeyVersioned {
             api_key: ApiKey::read_from(reader).await?,
             min_version: i16::read_from(reader).await?,
             max_version: i16::read_from(reader).await?,
+        };
+        Ok(v)
+    }
+}
+
+impl Read for ApiVersionsResponse {
+    async fn read_from(reader: &mut (dyn tokio::io::AsyncRead + Send + Unpin)) -> Result<Self> {
+        let v = ApiVersionsResponse {
+            api_keys: Vec::<ApiKeyVersioned>::read_from(reader).await?,
         };
         Ok(v)
     }

@@ -1,4 +1,4 @@
-use kafkaesque::protocol::messages::ApiVersionsRequest;
+use kafkaesque::protocol::messages::{ApiVersionsRequest, ApiVersionsResponse};
 use kafkaesque::{Client, Result};
 use tracing::info;
 use tracing_subscriber::prelude::*;
@@ -8,7 +8,8 @@ use tracing_subscriber::{fmt, EnvFilter};
 async fn main() -> Result<()> {
     setup_tracing();
     let mut client = Client::connect("amr-plays", "localhost:9092").await?;
-    client.send(ApiVersionsRequest).await?;
+    let resp: ApiVersionsResponse = client.send(ApiVersionsRequest).await?.message;
+    info!("Got response: {resp:?}");
     Ok(())
 }
 

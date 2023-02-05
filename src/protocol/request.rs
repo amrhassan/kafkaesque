@@ -1,5 +1,5 @@
 use super::api_keys::ApiKey;
-use super::codec::{FixedLength, Write};
+use super::codec::{FixedLength, Read, Write};
 use crate::Result;
 use derive_more::{Constructor, From, Into};
 use tokio::io::AsyncWrite;
@@ -13,6 +13,12 @@ impl Write for CorrelationId {
     }
     async fn write_to(&self, writer: &mut (dyn AsyncWrite + Send + Unpin)) -> Result<()> {
         self.0.write_to(writer).await
+    }
+}
+
+impl Read for CorrelationId {
+    async fn read_from(reader: &mut (dyn tokio::io::AsyncRead + Send + Unpin)) -> Result<Self> {
+        Ok(i32::read_from(reader).await?.into())
     }
 }
 

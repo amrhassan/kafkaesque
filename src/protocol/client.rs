@@ -1,8 +1,9 @@
 use super::{
-    codec::Write,
+    codec::{Read, Write},
     request::{CorrelationId, RequestHeader, RequestMessage},
+    response::Response,
 };
-use crate::Result;
+use crate::{protocol::response::ErrorCode, Result};
 use std::{
     fmt::Debug,
     sync::atomic::{AtomicI32, Ordering},
@@ -30,20 +31,34 @@ impl Client {
         Ok(c)
     }
 
-    pub async fn send<M: RequestMessage + Write + Debug>(&mut self, message: M) -> Result<()> {
-        let header = self.generate_header::<M>();
-        let size = header.calculate_size() + message.calculate_size();
+    pub async fn send<ReqM: RequestMessage + Write + Debug, Resp: Read + Debug>(
+        &mut self,
+        message: ReqM,
+    ) -> Result<Response<Resp>> {
+        let header = self.generate_header::<ReqM>();
+        let req_len = header.calculate_size() + message.calculate_size();
 
-        debug!("Sending request [size={size},header={header:?},message={message:?}]");
+        debug!("Sending request [len={req_len},header={header:?},message={message:?}]");
 
-        i32::from(size).write_to(&mut self.stream).await?;
+        req_len.write_to(&mut self.stream).await?;
         header.write_to(&mut self.stream).await?;
         message.write_to(&mut self.stream).await?;
         self.stream.flush().await?;
 
-        // let err_code = ErrorCode::read_from(&mut self.stream).await?;
-        // debug!("Got err_code: {:?}", err_code);
-        Ok(())
+        let resp_len = i32::read_from(&mut self.stream).await?;
+        let resp_cid = CorrelationId::read_from(&mut self.stream).await?;
+        let err_code = ErrorCode::read_from(&mut self.stream).await?;
+        debug!(
+            "Received response [len={resp_len},cid={resp_cid:?},error_code={:?}]",
+            err_code
+        );
+
+        let resp_message = Resp::read_from(&mut self.stream).await?;
+
+        Ok(Response {
+            err_code,
+            message: resp_message,
+        })
     }
 
     fn generate_header<M: RequestMessage>(&mut self) -> RequestHeader {

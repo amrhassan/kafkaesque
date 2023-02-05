@@ -1,6 +1,7 @@
 use super::codec::{FixedLength, Read, Write};
 use crate::{KafkaesqueError, Result};
 use tokio::io::AsyncWrite;
+use tracing::debug;
 
 #[derive(Debug, Clone, Copy)]
 pub enum ApiKey {
@@ -65,6 +66,7 @@ pub enum ApiKey {
     DescribeTransactions,
     ListTransactions,
     AllocateProducerIds,
+    Unsupported(i16),
 }
 
 impl Write for ApiKey {
@@ -73,7 +75,7 @@ impl Write for ApiKey {
     }
     async fn write_to(&self, writer: &mut (dyn AsyncWrite + Send + Unpin)) -> Result<()> {
         use ApiKey::*;
-        let n = match self {
+        let n: i16 = match self {
             Produce => 0,
             Fetch => 1,
             ListOffsets => 2,
@@ -135,6 +137,7 @@ impl Write for ApiKey {
             DescribeTransactions => 65,
             ListTransactions => 66,
             AllocateProducerIds => 67,
+            Unsupported(n) => *n,
         };
         n.write_to(writer).await
     }
@@ -206,7 +209,7 @@ impl Read for ApiKey {
             65 => DescribeTransactions,
             66 => ListTransactions,
             67 => AllocateProducerIds,
-            otherwise => return Err(KafkaesqueError::UnsupportedApiKey(n)),
+            n => Unsupported(n),
         };
         Ok(v)
     }
