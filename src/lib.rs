@@ -7,5 +7,5 @@
 mod errors;
 pub mod protocol;
 
-pub use errors::Result;
+pub use errors::{KafkaesqueError, Result};
 pub use protocol::Client;

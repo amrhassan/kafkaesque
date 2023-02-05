@@ -1,6 +1,7 @@
 use crate::protocol::api_keys::ApiKey;
-use crate::protocol::codec::Write;
+use crate::protocol::codec::{Read, Write};
 use crate::protocol::request::{ApiVersion, RequestMessage};
+use crate::protocol::response::ErrorCode;
 use crate::Result;
 use derive_more::{Constructor, From, Into};
 use tokio::io::AsyncWrite;
@@ -19,5 +20,27 @@ impl Write for ApiVersionsRequest {
     }
     async fn write_to(&self, writer: &mut (dyn AsyncWrite + Send + Unpin)) -> Result<()> {
         Ok(())
+    }
+}
+
+pub struct ApiVersionsResponse {
+    pub err_code: ErrorCode,
+    pub api_keys: Vec<ApiKeyVersioned>,
+}
+
+pub struct ApiKeyVersioned {
+    pub api_key: ApiKey,
+    pub min_version: i16,
+    pub max_version: i16,
+}
+
+impl Read for ApiKeyVersioned {
+    async fn read_from(reader: &mut (dyn tokio::io::AsyncRead + Send + Unpin)) -> Result<Self> {
+        let v = ApiKeyVersioned {
+            api_key: ApiKey::read_from(reader).await?,
+            min_version: i16::read_from(reader).await?,
+            max_version: i16::read_from(reader).await?,
+        };
+        Ok(v)
     }
 }

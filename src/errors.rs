@@ -9,4 +9,6 @@ pub enum KafkaesqueError {
     Utf8Parsing(#[from] FromUtf8Error),
     #[error("IO error: {0}")]
     Io(#[from] std::io::Error),
+    #[error("Unsupported API Key: {0}")]
+    UnsupportedApiKey(i16),
 }
