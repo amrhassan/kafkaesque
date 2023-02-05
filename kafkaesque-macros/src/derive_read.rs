@@ -26,10 +26,16 @@ pub fn expand(ts: TokenStream) -> TokenStream {
     };
 
     let reading: Vec<proc_macro2::TokenStream> = fields
-        .iter()
+        .into_iter()
         .map(|field| {
-            let name = field.ident.clone();
-            let ty = field.ty.clone();
+            let name = field
+                .ident
+                .clone()
+                .map(|ident| quote! {#ident})
+                .unwrap_or(quote! {0});
+            (name, field.ty)
+        })
+        .map(|(name, ty)| {
             quote! { #name: <#ty as Read>::read_from(reader).await?, }
         })
         .collect();

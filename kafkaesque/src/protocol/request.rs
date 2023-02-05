@@ -4,35 +4,11 @@ use crate::Result;
 use derive_more::{Constructor, From, Into};
 use tokio::io::AsyncWrite;
 
-#[derive(Debug, From, Into, Clone, Copy)]
+#[derive(Debug, From, Into, Clone, Copy, Read, Write)]
 pub struct CorrelationId(i32);
 
-impl Write for CorrelationId {
-    fn calculate_size(&self) -> i32 {
-        i32::SIZE
-    }
-    async fn write_to(&self, writer: &mut (dyn AsyncWrite + Send + Unpin)) -> Result<()> {
-        self.0.write_to(writer).await
-    }
-}
-
-impl Read for CorrelationId {
-    async fn read_from(reader: &mut (dyn tokio::io::AsyncRead + Send + Unpin)) -> Result<Self> {
-        Ok(i32::read_from(reader).await?.into())
-    }
-}
-
-#[derive(From, Into, Copy, Clone, Debug)]
+#[derive(From, Into, Copy, Clone, Debug, Write)]
 pub struct ApiVersion(pub i16);
-
-impl Write for ApiVersion {
-    fn calculate_size(&self) -> i32 {
-        i16::SIZE
-    }
-    async fn write_to(&self, writer: &mut (dyn AsyncWrite + Send + Unpin)) -> Result<()> {
-        self.0.write_to(writer).await
-    }
-}
 
 #[derive(Debug, Write)]
 pub struct RequestHeader {

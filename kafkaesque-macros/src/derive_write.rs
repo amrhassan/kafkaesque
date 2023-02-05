@@ -26,19 +26,28 @@ pub fn expand(ts: TokenStream) -> TokenStream {
         Data::Enum(_) => todo!(""),
     };
 
-    let size_calculation: Vec<proc_macro2::TokenStream> = fields
+    let field_names: Vec<proc_macro2::TokenStream> = fields
         .iter()
         .map(|field| {
-            let name = field.ident.clone();
+            field
+                .ident
+                .clone()
+                .map(|ident| quote! {#ident})
+                .unwrap_or(quote! {0})
+        })
+        .collect();
+
+    let size_calculation: Vec<proc_macro2::TokenStream> = field_names
+        .iter()
+        .map(|name| {
             quote! { Write::calculate_size(&self.#name) }
         })
         .chain(iter::once(quote! { 0 }))
         .collect();
 
-    let writing: Vec<proc_macro2::TokenStream> = fields
+    let writing: Vec<proc_macro2::TokenStream> = field_names
         .iter()
-        .map(|field| {
-            let name = field.ident.clone();
+        .map(|name| {
             quote! { Write::write_to(&self.#name, writer).await?;}
         })
         .collect();

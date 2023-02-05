@@ -15,7 +15,7 @@ test:
 	docker compose up -d &&\
 		sleep 5 &&\
 		cargo test --all-features -- --ignored && \
-		docker compose down
+		# docker compose down
 
 t: test
 
