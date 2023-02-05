@@ -1,4 +1,4 @@
-.PHONY: format build test clippy
+.PHONY: format build test clippy test-ci
 
 format:
 	cargo fmt
@@ -10,12 +10,14 @@ build:
 
 b: build
 
-test:
+test-ci:
 	cargo build --all-features
 	docker compose up -d &&\
-		sleep 5 &&\
-		cargo test --all-features -- --ignored && \
-		# docker compose down
+		sleep 3 &&\
+		cargo test --all-features -- --ignored
+
+test:
+	cargo test --all-features -- --ignored
 
 t: test
 

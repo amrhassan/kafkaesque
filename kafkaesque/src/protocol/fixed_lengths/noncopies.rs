@@ -2,11 +2,7 @@ use crate::{
     protocol::codec::{FixedLength, Read, Write},
     Result,
 };
-use derive_more::{Display, From, Into};
-use integer_encoding::VarIntAsyncReader;
-use std::convert::identity;
-use tokio::io::{AsyncRead, AsyncReadExt, AsyncWrite, AsyncWriteExt};
-use uuid::Uuid;
+use tokio::io::{AsyncRead, AsyncWrite};
 
 impl FixedLength for bool {
     const SIZE: i32 = 1;

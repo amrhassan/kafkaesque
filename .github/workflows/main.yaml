@@ -29,4 +29,4 @@ jobs:
         args: --all-features
     - name: Test
       run: |
-        make test
+        make test-ci

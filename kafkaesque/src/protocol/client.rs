@@ -4,13 +4,10 @@ use super::{
     response::Response,
 };
 use crate::{protocol::response::ErrorCode, Result};
-use std::{
-    fmt::Debug,
-    sync::atomic::{AtomicI32, Ordering},
-};
+use std::fmt::Debug;
 use tokio::io::AsyncWriteExt;
 use tokio::{
-    io::{AsyncReadExt, BufStream, BufWriter},
+    io::BufStream,
     net::{TcpStream, ToSocketAddrs},
 };
 use tracing::debug;

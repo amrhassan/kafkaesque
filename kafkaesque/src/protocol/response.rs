@@ -1,10 +1,7 @@
-use super::{
-    api_keys::ApiKey,
-    codec::{FixedLength, Read, Write},
-};
+use super::codec::Read;
 use crate::Result;
 use derive_more::{From, Into};
-use tokio::io::{AsyncRead, AsyncWrite};
+use tokio::io::AsyncRead;
 
 #[derive(Debug)]
 pub struct Response<M> {

@@ -1,7 +1,6 @@
 use super::codec::{FixedLength, Read, Write};
-use crate::{KafkaesqueError, Result};
+use crate::Result;
 use tokio::io::AsyncWrite;
-use tracing::debug;
 
 #[derive(Debug, Clone, Copy)]
 pub enum ApiKey {

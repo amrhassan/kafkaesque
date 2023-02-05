@@ -1,10 +1,7 @@
 use crate::protocol::api_keys::ApiKey;
 use crate::protocol::codec::{Read, Write};
 use crate::protocol::request::{ApiVersion, RequestMessage};
-use crate::protocol::response::ErrorCode;
 use crate::Result;
-use derive_more::{Constructor, From, Into};
-use tokio::io::AsyncWrite;
 
 #[derive(Debug, Write)]
 pub struct ApiVersionsRequest;
@@ -29,7 +26,7 @@ pub struct ApiKeyVersioned {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::*;
+    use crate::{protocol::response::ErrorCode, *};
 
     #[tokio::test]
     async fn test_api_versions() {

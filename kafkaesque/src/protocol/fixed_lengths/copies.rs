@@ -2,11 +2,8 @@ use crate::{
     protocol::codec::{FixedLength, Read, Write},
     Result,
 };
-use derive_more::{Display, From, Into};
-use integer_encoding::VarIntAsyncReader;
 use std::convert::identity;
-use tokio::io::{AsyncRead, AsyncReadExt, AsyncWrite, AsyncWriteExt};
-use uuid::Uuid;
+use tokio::io::{AsyncReadExt, AsyncWriteExt};
 
 macro_rules! fixed_length_copy_io_impl {
     ($SelfT:ty, $size:expr, $write_map:expr, $write:expr, $read:expr, $read_map:expr,) => {

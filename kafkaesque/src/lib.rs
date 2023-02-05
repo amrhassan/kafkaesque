@@ -1,7 +1,6 @@
 #![feature(async_fn_in_trait)]
 #![deny(warnings)]
 #![deny(clippy::all)]
-#![allow(unused)]
 #![allow(incomplete_features)]
 
 mod errors;
