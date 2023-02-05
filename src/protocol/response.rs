@@ -12,7 +12,7 @@ pub struct Response<M> {
     pub message: M,
 }
 
-#[derive(From, Into, Debug)]
+#[derive(From, Into, Debug, PartialEq, Eq)]
 pub struct ErrorCode(i16);
 
 impl Read for ErrorCode {

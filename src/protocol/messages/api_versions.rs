@@ -54,3 +54,19 @@ impl Read for ApiVersionsResponse {
         Ok(v)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::*;
+    use std::os::unix::process::CommandExt;
+
+    #[tokio::test]
+    async fn test_api_versions() {
+        let mut client = Client::connect("test-client", "localhost:9092")
+            .await
+            .unwrap();
+        let resp: Response<ApiVersionsResponse> = client.send(ApiVersionsRequest).await.unwrap();
+        assert_eq!(resp.err_code, ErrorCode::from(0));
+    }
+}
