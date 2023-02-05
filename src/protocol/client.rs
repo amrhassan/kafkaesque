@@ -48,6 +48,7 @@ impl Client {
         let resp_len = i32::read_from(&mut self.stream).await?;
         let resp_cid = CorrelationId::read_from(&mut self.stream).await?;
         let err_code = ErrorCode::read_from(&mut self.stream).await?;
+
         debug!(
             "Received response [len={resp_len},cid={resp_cid:?},error_code={:?}]",
             err_code

@@ -68,5 +68,6 @@ mod tests {
             .unwrap();
         let resp: Response<ApiVersionsResponse> = client.send(ApiVersionsRequest).await.unwrap();
         assert_eq!(resp.err_code, ErrorCode::from(0));
+        assert!(!resp.message.api_keys.is_empty())
     }
 }
