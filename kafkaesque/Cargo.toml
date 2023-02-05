@@ -6,14 +6,15 @@ license = "MIT"
 authors = ["Amr Hassan <amr.hassan@gmail.com>"]
 
 [dev-dependencies]
-tokio = { version = "1.21.1", features = ["macros", "rt-multi-thread"] }
-tracing-subscriber = { version = "0.3", features = ["fmt", "env-filter"] }
+tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
+tracing-subscriber = { workspace = true, features = ["fmt", "env-filter"] }
 
 [dependencies]
-derive_more = "0.99.17"
-integer-encoding = { version = "3.0.4", features = ["tokio_async"] }
-thiserror = "1.0.35"
-tokio = { version = "1.21.1", features = ["io-util", "net"] }
-tokio-util = { version = "0.7.4", features = ["compat"] }
-tracing = "0.1"
-uuid = "1.1.2"
+kafkaesque-macros = { path = "../kafkaesque-macros" }
+derive_more = { workspace = true }
+integer-encoding = { workspace = true, features = ["tokio_async"] }
+thiserror = { workspace = true }
+tokio = { workspace = true, features = ["io-util", "net"]  }
+tokio-util = { workspace = true, features = ["compat"] }
+tracing = { workspace = true }
+uuid = { workspace = true }

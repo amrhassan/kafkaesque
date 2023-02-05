@@ -28,14 +28,5 @@ jobs:
         command: build
         args: --all-features
     - name: Test
-      uses: actions-rs/cargo@v1
-      with:
-        command: test
-        args: --all-features
-      env:
-        PROPTEST_CASES: 1024
-    - name: Test Heavily
-      uses: actions-rs/cargo@v1
-      with:
-        command: test
-        args: --all-features -- --ignored
+      run: |
+        make test

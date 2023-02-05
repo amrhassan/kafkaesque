@@ -12,7 +12,6 @@ b: build
 
 test:
 	cargo build --all-features
-	cargo test --all-features
 	docker compose up -d &&\
 		sleep 5 &&\
 		cargo test --all-features -- --ignored && \

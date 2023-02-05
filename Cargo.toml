@@ -1,15 +1,16 @@
 [workspace]
-members = ["kafkaesque"]
-
-[workspace.dev-dependencies]
-tokio = { version = "1.21.1", features = ["macros", "rt-multi-thread"] }
-tracing-subscriber = { version = "0.3", features = ["fmt", "env-filter"] }
+members = ["kafkaesque", "kafkaesque-macros"]
 
 [workspace.dependencies]
+darling = "0.14.2"
 derive_more = "0.99.17"
-integer-encoding = { version = "3.0.4", features = ["tokio_async"] }
+integer-encoding = { version = "3.0.4" }
+proc-macro2 = "1"
+quote = "1.0.23"
+syn = "1.0.107"
 thiserror = "1.0.35"
-tokio = { version = "1.21.1", features = ["io-util", "net"] }
-tokio-util = { version = "0.7.4", features = ["compat"] }
+tokio = { version = "1.21.1"}
+tokio-util = { version = "0.7.4" }
 tracing = "0.1"
+tracing-subscriber = { version = "0.3" }
 uuid = "1.1.2"

@@ -34,28 +34,12 @@ impl Write for ApiVersion {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Write)]
 pub struct RequestHeader {
     pub api_key: ApiKey,
     pub api_version: ApiVersion,
     pub cid: CorrelationId,
     pub client_id: &'static str,
-}
-
-impl Write for RequestHeader {
-    fn calculate_size(&self) -> i32 {
-        self.api_key.calculate_size()
-            + self.api_version.calculate_size()
-            + self.cid.calculate_size()
-            + self.client_id.calculate_size()
-    }
-    async fn write_to(&self, writer: &mut (dyn AsyncWrite + Send + Unpin)) -> Result<()> {
-        self.api_key.write_to(writer).await?;
-        self.api_version.write_to(writer).await?;
-        self.cid.write_to(writer).await?;
-        self.client_id.write_to(writer).await?;
-        Ok(())
-    }
 }
 
 pub trait RequestMessage {

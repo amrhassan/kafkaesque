@@ -1,14 +1,14 @@
-pub fn add(left: usize, right: usize) -> usize {
-    left + right
+mod derive_write;
+mod derive_read;
+
+use proc_macro::TokenStream;
+
+#[proc_macro_derive(Write)]
+pub fn derive_write(input: TokenStream) -> TokenStream {
+    derive_write::expand(input)
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
-    }
+#[proc_macro_derive(Read)]
+pub fn derive_read(input: TokenStream) -> TokenStream {
+    derive_read::expand(input)
 }
