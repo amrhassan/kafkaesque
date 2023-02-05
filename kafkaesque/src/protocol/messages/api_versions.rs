@@ -30,7 +30,6 @@ pub struct ApiKeyVersioned {
 mod tests {
     use super::*;
     use crate::*;
-    use std::os::unix::process::CommandExt;
 
     #[tokio::test]
     async fn test_api_versions() {
