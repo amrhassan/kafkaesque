@@ -1,8 +1,8 @@
-use crate::{
-    io::{Read, Write},
-    types::{ApiVersionsRequest, CorrelationId, ErrorCode, Int32, RequestHeader, RequestMessage},
-    Result,
+use super::{
+    io::Write,
+    request::{CorrelationId, RequestHeader, RequestMessage},
 };
+use crate::Result;
 use std::{
     fmt::Debug,
     sync::atomic::{AtomicI32, Ordering},
@@ -17,13 +17,15 @@ use tracing::debug;
 pub struct Client {
     next_cid: i32,
     stream: BufStream<TcpStream>,
+    client_id: &'static str,
 }
 
 impl Client {
-    pub async fn connect(addr: impl ToSocketAddrs) -> Result<Self> {
+    pub async fn connect(client_id: &'static str, addr: impl ToSocketAddrs) -> Result<Self> {
         let c = Client {
             next_cid: 0,
             stream: BufStream::new(TcpStream::connect(addr).await?),
+            client_id,
         };
         Ok(c)
     }
@@ -34,7 +36,7 @@ impl Client {
 
         debug!("Sending request [size={size},header={header:?},message={message:?}]");
 
-        Int32::from(size).write_to(&mut self.stream).await?;
+        i32::from(size).write_to(&mut self.stream).await?;
         header.write_to(&mut self.stream).await?;
         message.write_to(&mut self.stream).await?;
         self.stream.flush().await?;
@@ -49,6 +51,7 @@ impl Client {
             api_key: M::API_KEY,
             api_version: M::API_VERSION,
             cid: self.get_next_cid(),
+            client_id: self.client_id,
         }
     }
 

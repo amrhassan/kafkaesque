@@ -1,4 +1,4 @@
-use kafkaesque::types::ApiVersionsRequest;
+use kafkaesque::protocol::messages::ApiVersionsRequest;
 use kafkaesque::{Client, Result};
 use tracing::info;
 use tracing_subscriber::prelude::*;
@@ -7,7 +7,7 @@ use tracing_subscriber::{fmt, EnvFilter};
 #[tokio::main]
 async fn main() -> Result<()> {
     setup_tracing();
-    let mut client = Client::connect("localhost:9092").await?;
+    let mut client = Client::connect("amr-plays", "localhost:9092").await?;
     client.send(ApiVersionsRequest).await?;
     Ok(())
 }

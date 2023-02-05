@@ -4,11 +4,8 @@
 #![allow(unused)]
 #![allow(incomplete_features)]
 
-mod broker;
-mod client;
 mod errors;
-mod io;
-pub mod types;
+pub mod protocol;
 
-pub use client::Client;
 pub use errors::Result;
+pub use protocol::Client;
