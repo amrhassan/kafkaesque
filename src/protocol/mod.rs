@@ -1,7 +1,7 @@
 mod api_keys;
 mod client;
+mod codec;
 mod fixed_lengths;
-mod io;
 mod request;
 mod response;
 mod variable_lengths;

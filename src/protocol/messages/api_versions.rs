@@ -1,5 +1,5 @@
 use crate::protocol::api_keys::ApiKey;
-use crate::protocol::io::Write;
+use crate::protocol::codec::Write;
 use crate::protocol::request::{ApiVersion, RequestMessage};
 use crate::Result;
 use derive_more::{Constructor, From, Into};

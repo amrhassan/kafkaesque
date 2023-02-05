@@ -1,4 +1,4 @@
-use super::io::{FixedLength, Write};
+use super::codec::{FixedLength, Write};
 use crate::Result;
 use tokio::io::AsyncWrite;
 

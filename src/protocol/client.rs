@@ -1,5 +1,5 @@
 use super::{
-    io::Write,
+    codec::Write,
     request::{CorrelationId, RequestHeader, RequestMessage},
 };
 use crate::Result;

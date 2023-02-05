@@ -1,6 +1,6 @@
 use super::{
     api_keys::ApiKey,
-    io::{FixedLength, Read, Write},
+    codec::{FixedLength, Read, Write},
 };
 use crate::Result;
 use derive_more::{From, Into};

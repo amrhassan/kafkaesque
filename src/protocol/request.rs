@@ -1,5 +1,5 @@
 use super::api_keys::ApiKey;
-use super::io::{FixedLength, Write};
+use super::codec::{FixedLength, Write};
 use crate::Result;
 use derive_more::{Constructor, From, Into};
 use tokio::io::AsyncWrite;

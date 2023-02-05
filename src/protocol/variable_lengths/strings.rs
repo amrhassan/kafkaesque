@@ -1,5 +1,5 @@
 use crate::{
-    protocol::io::{FixedLength, Write},
+    protocol::codec::{FixedLength, Write},
     Result,
 };
 use derive_more::{Display, From, Into};
