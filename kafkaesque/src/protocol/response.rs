@@ -9,14 +9,8 @@ pub struct Response<M> {
     pub message: M,
 }
 
-#[derive(From, Into, Debug, PartialEq, Eq)]
+#[derive(From, Into, Debug, PartialEq, Eq, Read)]
 pub struct ErrorCode(i16);
-
-impl Read for ErrorCode {
-    async fn read_from(reader: &mut (dyn AsyncRead + Send + Unpin)) -> Result<Self> {
-        Ok(i16::read_from(reader).await?.into())
-    }
-}
 
 impl<R: Read> Read for Response<R> {
     async fn read_from(reader: &mut (dyn AsyncRead + Send + Unpin)) -> Result<Self> {
