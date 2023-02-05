@@ -1,5 +1,5 @@
-mod derive_write;
 mod derive_read;
+mod derive_write;
 
 use proc_macro::TokenStream;
 
