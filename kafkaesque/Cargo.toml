@@ -1,11 +1,15 @@
-[workspace]
-members = ["kafkaesque"]
+[package]
+name = "kafkaesque"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+authors = ["Amr Hassan <amr.hassan@gmail.com>"]
 
-[workspace.dev-dependencies]
+[dev-dependencies]
 tokio = { version = "1.21.1", features = ["macros", "rt-multi-thread"] }
 tracing-subscriber = { version = "0.3", features = ["fmt", "env-filter"] }
 
-[workspace.dependencies]
+[dependencies]
 derive_more = "0.99.17"
 integer-encoding = { version = "3.0.4", features = ["tokio_async"] }
 thiserror = "1.0.35"
