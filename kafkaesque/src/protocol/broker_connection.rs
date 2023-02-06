@@ -46,16 +46,42 @@ impl BrokerConnection {
         &mut self,
         message: ReqM,
     ) -> Result<Response<Resp>> {
+        self.write_request(message).await?;
+        self.stream.flush().await?;
+        self.read_response().await
+    }
+
+    pub async fn send_many<ReqM: RequestMessage + Write + Debug, Resp: Read + Debug>(
+        &mut self,
+        messages: impl IntoIterator<Item = ReqM>,
+    ) -> Result<Vec<Response<Resp>>> {
+        let mut len = 0;
+        for message in messages {
+            self.write_request(message).await?;
+            len += 1;
+        }
+        self.stream.flush().await?;
+        let mut responses = Vec::with_capacity(len);
+        for _ in 0..len {
+            responses.push(self.read_response().await?);
+        }
+        Ok(responses)
+    }
+
+    async fn write_request<ReqM: RequestMessage + Write + Debug>(
+        &mut self,
+        message: ReqM,
+    ) -> Result<()> {
         let header = self.generate_header::<ReqM>();
         let req_len = header.calculate_size() + message.calculate_size();
-
         debug!("Sending request [len={req_len},header={header:?},message={message:?}]");
-
         req_len.write_to(&mut self.stream).await?;
         header.write_to(&mut self.stream).await?;
         message.write_to(&mut self.stream).await?;
-        self.stream.flush().await?;
+        Ok(())
+    }
 
+    async fn read_response<Resp: Read + Debug>(&mut self) -> Result<Response<Resp>> {
         let resp_len = i32::read_from(&mut self.stream).await?;
         let resp_cid = CorrelationId::read_from(&mut self.stream).await?;
         let err_code = ErrorCode::read_from(&mut self.stream).await?;
