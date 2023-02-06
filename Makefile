@@ -1,4 +1,4 @@
-.PHONY: format build test clippy test-ci
+.PHONY: format build test clippy test-ci kafka
 
 format:
 	cargo fmt
@@ -10,11 +10,12 @@ build:
 
 b: build
 
-test-ci:
-	cargo build --all-features
-	docker compose up -d &&\
-		sleep 5 &&\
-		make test
+kafka:
+	docker compose up -d
+	sleep 5
+
+test-ci: kafka
+	make test
 
 test:
 	cargo test --all-features
