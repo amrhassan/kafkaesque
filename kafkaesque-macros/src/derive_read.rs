@@ -54,6 +54,7 @@ pub fn expand(ts: TokenStream) -> TokenStream {
         .collect();
 
     let output = quote! {
+        #[automatically_derived]
         impl #impl_generics crate::protocol::codec::Read for #name #generics {
             async fn read_from(reader: &mut (dyn tokio::io::AsyncRead + Send + Unpin)) -> crate::protocol::Result<Self> {
                 let v = #name {

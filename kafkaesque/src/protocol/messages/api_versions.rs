@@ -2,13 +2,9 @@ use crate::protocol::api_keys::ApiKey;
 use crate::protocol::codec::{Read, Write};
 use crate::protocol::request::{ApiVersion, RequestMessage};
 
-#[derive(Debug, Write)]
+#[derive(Debug, Write, RequestMessage)]
+#[request_message(version = 0, key = "ApiVersions")]
 pub struct ApiVersionsRequest;
-
-impl RequestMessage for ApiVersionsRequest {
-    const API_KEY: ApiKey = ApiKey::ApiVersions;
-    const API_VERSION: ApiVersion = ApiVersion(0);
-}
 
 #[derive(Debug, Read)]
 pub struct ApiVersionsResponse {

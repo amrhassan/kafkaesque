@@ -66,6 +66,7 @@ pub fn expand(ts: TokenStream) -> TokenStream {
         .collect();
 
     let output = quote! {
+        #[automatically_derived]
         impl #impl_generics crate::protocol::codec::Write for #name #generics {
             fn calculate_size(&self) -> i32 {
                 #(#size_calculation)+*

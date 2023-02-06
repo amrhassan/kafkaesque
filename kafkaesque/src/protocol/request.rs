@@ -2,6 +2,8 @@ use super::api_keys::ApiKey;
 use super::codec::{Read, Write};
 use derive_more::{From, Into};
 
+pub use kafkaesque_macros::RequestMessage;
+
 #[derive(Debug, From, Into, Clone, Copy, Read, Write)]
 pub struct CorrelationId(i32);
 
