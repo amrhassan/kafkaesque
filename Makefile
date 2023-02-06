@@ -12,7 +12,7 @@ b: build
 
 kafka:
 	docker compose up -d
-	sleep 5
+	sleep 10
 
 test-ci: kafka
 	make test
