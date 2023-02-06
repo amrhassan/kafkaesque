@@ -2,9 +2,9 @@ use super::{
     codec::{Read, Write},
     request::{CorrelationId, RequestHeader, RequestMessage},
     response::Response,
-    DEFAULT_BUF_SIZE,
+    Result, DEFAULT_BUF_SIZE,
 };
-use crate::{protocol::response::ErrorCode, Result};
+use crate::protocol::response::ErrorCode;
 use std::fmt::Debug;
 use tokio::io::AsyncWriteExt;
 use tokio::{

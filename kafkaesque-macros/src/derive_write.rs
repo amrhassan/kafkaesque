@@ -70,7 +70,7 @@ pub fn expand(ts: TokenStream) -> TokenStream {
             fn calculate_size(&self) -> i32 {
                 #(#size_calculation)+*
             }
-            async fn write_to(&self, writer: &mut (dyn tokio::io::AsyncWrite + Send + Unpin)) -> Result<()> {
+            async fn write_to(&self, writer: &mut (dyn tokio::io::AsyncWrite + Send + Unpin)) -> crate::protocol::Result<()> {
                 #(#writing) *
                 Ok(())
             }

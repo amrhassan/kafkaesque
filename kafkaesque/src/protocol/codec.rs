@@ -1,4 +1,4 @@
-use crate::Result;
+use super::Result;
 use tokio::io::{AsyncRead, AsyncWrite};
 
 pub use kafkaesque_macros::{Read, Write};

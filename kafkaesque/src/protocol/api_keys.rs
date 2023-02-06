@@ -1,5 +1,7 @@
-use super::codec::{FixedLength, Read, Write};
-use crate::Result;
+use super::{
+    codec::{FixedLength, Read, Write},
+    errors::Result,
+};
 use tokio::io::AsyncWrite;
 
 #[derive(Debug, Clone, Copy)]

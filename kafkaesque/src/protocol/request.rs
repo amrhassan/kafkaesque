@@ -1,6 +1,5 @@
 use super::api_keys::ApiKey;
 use super::codec::{Read, Write};
-use crate::Result;
 use derive_more::{From, Into};
 
 #[derive(Debug, From, Into, Clone, Copy, Read, Write)]

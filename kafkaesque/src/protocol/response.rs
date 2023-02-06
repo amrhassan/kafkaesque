@@ -1,5 +1,4 @@
 use super::codec::{Read, Write};
-use crate::Result;
 use derive_more::{From, Into};
 
 #[derive(Debug, Read, Write)]

@@ -1,5 +1,5 @@
-use crate::{
-    protocol::codec::{FixedLength, Read, Write},
+use crate::protocol::{
+    codec::{FixedLength, Read, Write},
     Result,
 };
 use tokio::io::{AsyncRead, AsyncWrite};

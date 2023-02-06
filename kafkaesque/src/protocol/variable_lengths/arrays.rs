@@ -1,4 +1,4 @@
-use crate::{protocol::codec::Read, Result};
+use crate::protocol::{codec::Read, Result};
 use tokio::io::AsyncRead;
 use tracing::trace;
 
