@@ -13,12 +13,12 @@ b: build
 test-ci:
 	cargo build --all-features
 	docker compose up -d &&\
-		sleep 3 &&\
+		sleep 5 &&\
 		make test
 
 test:
-	cargo test  --all-features
-	cargo test --all --all-features -- --ignored
+	cargo test --all-features
+	cargo test --all-features -- --ignored
 
 t: test
 
