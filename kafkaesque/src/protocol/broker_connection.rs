@@ -2,6 +2,7 @@ use super::{
     codec::{Read, Write},
     request::{CorrelationId, RequestHeader, RequestMessage},
     response::Response,
+    DEFAULT_BUF_SIZE,
 };
 use crate::{protocol::response::ErrorCode, Result};
 use std::fmt::Debug;
@@ -12,17 +13,30 @@ use tokio::{
 };
 use tracing::debug;
 
-pub struct Client {
+pub struct BrokerConnection {
     next_cid: i32,
     stream: BufStream<TcpStream>,
     client_id: &'static str,
 }
 
-impl Client {
+impl BrokerConnection {
     pub async fn connect(client_id: &'static str, addr: impl ToSocketAddrs) -> Result<Self> {
-        let c = Client {
+        Self::connect_with_buffer_size(client_id, addr, DEFAULT_BUF_SIZE, DEFAULT_BUF_SIZE).await
+    }
+
+    pub async fn connect_with_buffer_size(
+        client_id: &'static str,
+        addr: impl ToSocketAddrs,
+        read_buf_size: usize,
+        write_buf_size: usize,
+    ) -> Result<Self> {
+        let c = BrokerConnection {
             next_cid: 0,
-            stream: BufStream::new(TcpStream::connect(addr).await?),
+            stream: BufStream::with_capacity(
+                read_buf_size,
+                write_buf_size,
+                TcpStream::connect(addr).await?,
+            ),
             client_id,
         };
         Ok(c)

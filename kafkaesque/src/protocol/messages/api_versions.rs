@@ -30,10 +30,10 @@ mod tests {
 
     #[tokio::test]
     async fn test_api_versions() {
-        let mut client = Client::connect("test-client", "localhost:9092")
+        let mut conn = BrokerConnection::connect("test-client", "localhost:9092")
             .await
             .unwrap();
-        let resp: Response<ApiVersionsResponse> = client.send(ApiVersionsRequest).await.unwrap();
+        let resp: Response<ApiVersionsResponse> = conn.send(ApiVersionsRequest).await.unwrap();
         assert_eq!(resp.err_code, ErrorCode::from(0));
         assert!(!resp.message.api_keys.is_empty())
     }
