@@ -1,5 +1,5 @@
-use crate::protocol::codec::{FixedLength, Read, Write};
-use crate::protocol::Result;
+use crate::formats::codec::{FixedLength, Read, Write};
+use crate::formats::Result;
 use std::convert::identity;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 

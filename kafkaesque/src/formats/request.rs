@@ -15,7 +15,7 @@ pub struct RequestHeader {
     pub api_key: ApiKey,
     pub api_version: ApiVersion,
     pub cid: CorrelationId,
-    pub client_id: &'static str,
+    pub client_id: String,
 }
 
 pub trait RequestMessage {

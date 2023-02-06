@@ -23,9 +23,9 @@ pub fn expand(ts: TokenStream) -> TokenStream {
 
     let output = quote! {
         #[automatically_derived]
-        impl crate::protocol::request::RequestMessage for #name {
-            const API_KEY: ApiKey = crate::protocol::api_keys::ApiKey::#key;
-            const API_VERSION: ApiVersion = crate::protocol::request::ApiVersion(#version);
+        impl crate::formats::request::RequestMessage for #name {
+            const API_KEY: ApiKey = crate::formats::api_keys::ApiKey::#key;
+            const API_VERSION: ApiVersion = crate::formats::request::ApiVersion(#version);
         }
     };
 

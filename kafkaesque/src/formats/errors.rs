@@ -1,10 +1,10 @@
 use std::string::FromUtf8Error;
 use thiserror::Error;
 
-pub type Result<T> = std::result::Result<T, ProtocolError>;
+pub type Result<T> = std::result::Result<T, FormatError>;
 
 #[derive(Debug, Error)]
-pub enum ProtocolError {
+pub enum FormatError {
     #[error("UTF8 parsing error: {0}")]
     Utf8Parsing(#[from] FromUtf8Error),
     #[error("IO error: {0}")]

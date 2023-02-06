@@ -1,6 +1,7 @@
-use crate::protocol::api_keys::ApiKey;
-use crate::protocol::codec::{Read, Write};
-use crate::protocol::request::{ApiVersion, RequestMessage};
+use crate::formats::api_keys::ApiKey;
+use crate::formats::codec::{Read, Write};
+use crate::formats::request::{ApiVersion, RequestMessage};
+use crate::formats::ErrorCode;
 
 #[derive(Debug, Write, RequestMessage)]
 #[request_message(version = 0, key = "ApiVersions")]
@@ -8,6 +9,7 @@ pub struct ApiVersionsRequest;
 
 #[derive(Debug, Read)]
 pub struct ApiVersionsResponse {
+    pub error_code: ErrorCode,
     pub api_keys: Vec<ApiKeyVersioned>,
 }
 
@@ -21,15 +23,15 @@ pub struct ApiKeyVersioned {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::protocol::{response::ErrorCode, BrokerConnection, Response};
+    use crate::formats::{response::ErrorCode, BrokerConnection};
 
     #[tokio::test]
     async fn test_api_versions() {
         let mut conn = BrokerConnection::connect("test-client", "localhost:9092")
             .await
             .unwrap();
-        let resp: Response<ApiVersionsResponse> = conn.send(ApiVersionsRequest).await.unwrap();
-        assert_eq!(resp.err_code, ErrorCode::from(0));
-        assert!(!resp.message.api_keys.is_empty())
+        let resp: ApiVersionsResponse = conn.send(ApiVersionsRequest).await.unwrap();
+        assert_eq!(resp.error_code, ErrorCode::from(0));
+        assert!(!resp.api_keys.is_empty())
     }
 }

@@ -48,17 +48,20 @@ pub fn expand(ts: TokenStream) -> TokenStream {
                 .unwrap_or(quote! {0});
             (name, field.ty)
         })
-        .map(|(name, ty)| {
-            quote! { #name: <#ty as Read>::read_from(reader).await?, }
+        .map(|(f_name, ty)| {
+            quote! { #f_name: {
+                tracing::trace!("reading {}", stringify!(#name.#f_name));
+                <#ty as Read>::read_from(reader).await? }
+            }
         })
         .collect();
 
     let output = quote! {
         #[automatically_derived]
-        impl #impl_generics crate::protocol::codec::Read for #name #generics {
-            async fn read_from(reader: &mut (dyn tokio::io::AsyncRead + Send + Unpin)) -> crate::protocol::Result<Self> {
+        impl #impl_generics crate::formats::codec::Read for #name #generics {
+            async fn read_from(reader: &mut (dyn tokio::io::AsyncRead + Send + Unpin)) -> crate::formats::Result<Self> {
                 let v = #name {
-                    #(#reading) *
+                    #(#reading),*
                 };
                 Ok(v)
             }

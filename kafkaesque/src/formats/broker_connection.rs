@@ -1,10 +1,8 @@
 use super::{
     codec::{Read, Write},
     request::{CorrelationId, RequestHeader, RequestMessage},
-    response::Response,
     Result, DEFAULT_BUF_SIZE,
 };
-use crate::protocol::response::ErrorCode;
 use std::fmt::Debug;
 use tokio::io::AsyncWriteExt;
 use tokio::{
@@ -13,19 +11,22 @@ use tokio::{
 };
 use tracing::debug;
 
+/// A connection to a single broker
+#[derive(Debug)]
 pub struct BrokerConnection {
     next_cid: i32,
     stream: BufStream<TcpStream>,
-    client_id: &'static str,
+    client_id: String,
 }
 
 impl BrokerConnection {
-    pub async fn connect(client_id: &'static str, addr: impl ToSocketAddrs) -> Result<Self> {
-        Self::connect_with_buffer_size(client_id, addr, DEFAULT_BUF_SIZE, DEFAULT_BUF_SIZE).await
+    pub async fn connect(client_id: impl Into<String>, addr: impl ToSocketAddrs) -> Result<Self> {
+        Self::connect_with_buffer_size(client_id.into(), addr, DEFAULT_BUF_SIZE, DEFAULT_BUF_SIZE)
+            .await
     }
 
     pub async fn connect_with_buffer_size(
-        client_id: &'static str,
+        client_id: impl Into<String>,
         addr: impl ToSocketAddrs,
         read_buf_size: usize,
         write_buf_size: usize,
@@ -37,15 +38,15 @@ impl BrokerConnection {
                 write_buf_size,
                 TcpStream::connect(addr).await?,
             ),
-            client_id,
+            client_id: client_id.into(),
         };
         Ok(c)
     }
 
-    pub async fn send<ReqM: RequestMessage + Write + Debug, Resp: Read + Debug>(
+    pub async fn send<Req: RequestMessage + Write + Debug, Resp: Read + Debug>(
         &mut self,
-        message: ReqM,
-    ) -> Result<Response<Resp>> {
+        message: Req,
+    ) -> Result<Resp> {
         self.write_request(message).await?;
         self.stream.flush().await?;
         self.read_response().await
@@ -54,7 +55,7 @@ impl BrokerConnection {
     pub async fn send_many<ReqM: RequestMessage + Write + Debug, Resp: Read + Debug>(
         &mut self,
         messages: impl IntoIterator<Item = ReqM>,
-    ) -> Result<Vec<Response<Resp>>> {
+    ) -> Result<Vec<Resp>> {
         let mut len = 0;
         for message in messages {
             self.write_request(message).await?;
@@ -66,6 +67,11 @@ impl BrokerConnection {
             responses.push(self.read_response().await?);
         }
         Ok(responses)
+    }
+
+    pub async fn shutdown(mut self) -> Result<()> {
+        self.stream.shutdown().await?;
+        Ok(())
     }
 
     async fn write_request<ReqM: RequestMessage + Write + Debug>(
@@ -81,22 +87,15 @@ impl BrokerConnection {
         Ok(())
     }
 
-    async fn read_response<Resp: Read + Debug>(&mut self) -> Result<Response<Resp>> {
+    async fn read_response<Resp: Read + Debug>(&mut self) -> Result<Resp> {
         let resp_len = i32::read_from(&mut self.stream).await?;
         let resp_cid = CorrelationId::read_from(&mut self.stream).await?;
-        let err_code = ErrorCode::read_from(&mut self.stream).await?;
 
-        debug!(
-            "Received response [len={resp_len},cid={resp_cid:?},error_code={:?}]",
-            err_code
-        );
+        debug!("Received response [len={resp_len},cid={resp_cid:?}]",);
 
-        let resp_message = Resp::read_from(&mut self.stream).await?;
+        let resp = Resp::read_from(&mut self.stream).await?;
 
-        Ok(Response {
-            err_code,
-            message: resp_message,
-        })
+        Ok(resp)
     }
 
     fn generate_header<M: RequestMessage>(&mut self) -> RequestHeader {
@@ -104,7 +103,7 @@ impl BrokerConnection {
             api_key: M::API_KEY,
             api_version: M::API_VERSION,
             cid: self.get_next_cid(),
-            client_id: self.client_id,
+            client_id: self.client_id.clone().into(),
         }
     }
 

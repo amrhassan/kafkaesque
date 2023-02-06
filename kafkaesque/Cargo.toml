@@ -1,5 +1,6 @@
 [package]
 name = "kafkaesque"
+description = "Unofficial Kafka implementations"
 version = "0.1.0"
 edition = "2021"
 license = "MIT"
@@ -10,9 +11,13 @@ tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
 tracing-subscriber = { workspace = true, features = ["fmt", "env-filter"] }
 
 [dependencies]
-kafkaesque-macros = { path = "../kafkaesque-macros" }
+derive_builder = { workspace = true }
 derive_more = { workspace = true }
+futures = { workspace = true }
 integer-encoding = { workspace = true, features = ["tokio_async"] }
+itertools = { workspace = true }
+kafkaesque-macros = { path = "../kafkaesque-macros" }
+namewise = { worksapce = true }
 thiserror = { workspace = true }
 tokio = { workspace = true, features = ["io-util", "net"]  }
 tokio-util = { workspace = true, features = ["compat"] }

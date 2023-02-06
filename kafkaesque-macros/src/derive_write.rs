@@ -67,11 +67,11 @@ pub fn expand(ts: TokenStream) -> TokenStream {
 
     let output = quote! {
         #[automatically_derived]
-        impl #impl_generics crate::protocol::codec::Write for #name #generics {
+        impl #impl_generics crate::formats::codec::Write for #name #generics {
             fn calculate_size(&self) -> i32 {
                 #(#size_calculation)+*
             }
-            async fn write_to(&self, writer: &mut (dyn tokio::io::AsyncWrite + Send + Unpin)) -> crate::protocol::Result<()> {
+            async fn write_to(&self, writer: &mut (dyn tokio::io::AsyncWrite + Send + Unpin)) -> crate::formats::Result<()> {
                 #(#writing) *
                 Ok(())
             }

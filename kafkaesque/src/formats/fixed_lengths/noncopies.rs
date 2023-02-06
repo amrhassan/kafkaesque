@@ -1,4 +1,4 @@
-use crate::protocol::{
+use crate::formats::{
     codec::{FixedLength, Read, Write},
     Result,
 };
