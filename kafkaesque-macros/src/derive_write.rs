@@ -5,6 +5,7 @@ use std::iter;
 use syn::{parse_macro_input, DeriveInput, Ident, Variant};
 
 #[derive(FromDeriveInput, Debug)]
+#[darling(supports(struct_named, struct_newtype, struct_unit))]
 struct Params {
     ident: syn::Ident,
     data: darling::ast::Data<Variant, StructField>,
