@@ -1,23 +1,12 @@
-use super::codec::Read;
+use super::codec::{Read, Write};
 use crate::Result;
 use derive_more::{From, Into};
-use tokio::io::AsyncRead;
 
-#[derive(Debug)]
+#[derive(Debug, Read, Write)]
 pub struct Response<M> {
     pub err_code: ErrorCode,
     pub message: M,
 }
 
-#[derive(From, Into, Debug, PartialEq, Eq, Read)]
+#[derive(From, Into, Debug, PartialEq, Eq, Read, Write)]
 pub struct ErrorCode(i16);
-
-impl<R: Read> Read for Response<R> {
-    async fn read_from(reader: &mut (dyn AsyncRead + Send + Unpin)) -> Result<Self> {
-        let v = Response {
-            err_code: ErrorCode::read_from(reader).await?,
-            message: R::read_from(reader).await?,
-        };
-        Ok(v)
-    }
-}
