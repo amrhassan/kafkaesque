@@ -27,11 +27,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-    - uses: cargo-bins/release-rust@v1
+    - id: release
+      uses: actions-rs/cargo@v1
       with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        publish-token: ${{ secrets.CRATES_TOKEN }}
-        packaging: tar+zstd
-        crates: ${{ needs.info.outputs.crate }}
-        release-tag: v${{ needs.info.outputs.version }}
-        release-notes: ${{ needs.info.outputs.notes }}
+        command: publish
+        args: --token ${{ secrets.CRATES_TOKEN }}
