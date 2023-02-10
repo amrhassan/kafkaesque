@@ -29,7 +29,7 @@ jobs:
     steps:
     - run: echo ${{ needs.info.outputs.go }}
     - uses: actions/checkout@v3
-    - uses: cargo-bins/release-rust
+    - uses: cargo-bins/release-rust@v1
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         publish-token: ${{ secrets.CRATES_TOKEN }}
