@@ -1,9 +1,7 @@
-name: Test (main)
+name: Test
 
 on:
   push:
-    branches: [ main ]
-  deployment:
     branches: [ main ]
 
 env:

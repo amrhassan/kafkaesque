@@ -1,4 +1,4 @@
-name: Release a crate
+name: Release crates
 on:
   pull_request:
     types: closed
@@ -8,11 +8,10 @@ jobs:
   info:
     if: github.event.pull_request.merged
     outputs:
-      go: ${{ steps.meta.outputs.is-release }}
+      is-release: ${{ steps.meta.outputs.is-release }}
       crate: ${{ steps.meta.outputs.crate-names }}
       version: ${{ steps.meta.outputs.version-actual }}
       notes: ${{ steps.meta.outputs.notes }}
-
     runs-on: ubuntu-latest
     steps:
     - id: meta
@@ -23,11 +22,10 @@ jobs:
 
   release:
     needs: info
-    if: needs.info.go == 'true'
+    if: needs.info.outputs.is-release == 'true'
     name: Release
     runs-on: ubuntu-latest
     steps:
-    - run: echo ${{ needs.info.outputs.go }}
     - uses: actions/checkout@v3
     - uses: cargo-bins/release-rust@v1
       with:
