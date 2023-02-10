@@ -5,7 +5,11 @@ on:
       version:
         description: Version to release
         required: true
-        type: string
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
 
 jobs:
   make-release-pr:
