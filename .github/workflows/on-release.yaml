@@ -9,10 +9,10 @@ jobs:
     if: github.event.pull_request.merged
     outputs:
       go: ${{ steps.meta.outputs.is-release }}
+      crate: ${{ steps.meta.outputs.crate-names }}
       version: ${{ steps.meta.outputs.version-actual }}
       notes: ${{ steps.meta.outputs.notes }}
 
-  meta:
     runs-on: ubuntu-latest
     steps:
     - id: meta
@@ -28,6 +28,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - run: echo ${{ needs.info.outputs.go }}
+    - uses: actions/checkout@v3
     - uses: cargo-bins/release-rust
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -35,4 +36,4 @@ jobs:
         packaging: tar+zstd
         crates: ${{ needs.info.outputs.crate }}
         release-tag: v${{ needs.info.outputs.version }}
-        # release-notes: ${{ needs.info.outputs.notes }}
+        release-notes: ${{ needs.info.outputs.notes }}
