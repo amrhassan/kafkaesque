@@ -2,7 +2,7 @@
 name = "kafkaesque-macros"
 description = "Unofficial Kafka implementations in Rust"
 repository = "https://github.com/amrhassan/kafkaesque"
-version = "0.0.5"
+version = "0.0.6"
 edition = "2021"
 license = "MIT"
 authors = ["Amr Hassan <amr.hassan@gmail.com>"]
