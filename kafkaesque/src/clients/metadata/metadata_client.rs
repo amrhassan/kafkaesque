@@ -7,8 +7,8 @@ use crate::{
     clients::{lazy_connection::LazyBrokerConnection, ClientConfig, ClientError, Result},
     formats::{
         messages::{
-            CreateTopicsReqV0, CreateTopicsReqV0CreateTopic, CreateTopicsRespV0,
-            MetadataReqV0Topic, MetadataRequestV0, MetadataResponseV0,
+            CreateTopicsReqV0, CreateTopicsReqV0CreateTopic, CreateTopicsRespV0, DeleteTopicsReqV0,
+            DeleteTopicsRespV0, MetadataReqV0Topic, MetadataRequestV0, MetadataResponseV0,
         },
         ErrorCode,
     },
@@ -79,6 +79,33 @@ impl MetadataClient {
             Ok(())
         }
     }
+
+    /// Delete topics
+    pub async fn delete_topics(
+        &self,
+        topic_names: impl IntoIterator<Item = TopicName>,
+        timeout: Duration,
+    ) -> Result<()> {
+        let req = DeleteTopicsReqV0 {
+            topic_names: topic_names.into_iter().map_into().collect(),
+            timeout_ms: timeout.as_millis() as i32,
+        };
+
+        let resp: DeleteTopicsRespV0 = self.conn.get_connection().await?.send(req).await?;
+
+        let errors = resp
+            .topics
+            .into_iter()
+            .filter(|t| t.err_code != ErrorCode::NONE)
+            .map(|t| (TopicName::from(t.name), t.err_code))
+            .collect_vec();
+
+        if !errors.is_empty() {
+            Err(ClientError::TopicDeletion { errors })
+        } else {
+            Ok(())
+        }
+    }
 }
 
 #[cfg(test)]
@@ -114,9 +141,13 @@ mod tests {
             .await
             .unwrap();
 
-        let metadata = client.get_metadata([topic_name]).await.unwrap();
+        let metadata = client.get_metadata([topic_name.clone()]).await.unwrap();
+        println!("{metadata:#?}");
 
-        println!("{metadata:#?}")
+        client
+            .delete_topics([topic_name], Duration::from_secs(5))
+            .await
+            .unwrap();
     }
 
     pub fn setup_tracing() {

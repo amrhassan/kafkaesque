@@ -66,7 +66,7 @@ mod tests {
     use crate::{
         clients::BrokerList,
         formats::{
-            messages::{ApiVersionsRequest, ApiVersionsResponse},
+            messages::{ApiVersionsReq, ApiVersionsResp},
             ErrorCode,
         },
     };
@@ -80,11 +80,11 @@ mod tests {
             client_id,
         };
         let conn = LazyBrokerConnection::new(client_config);
-        let resp: ApiVersionsResponse = conn
+        let resp: ApiVersionsResp = conn
             .get_connection()
             .await
             .unwrap()
-            .send(ApiVersionsRequest)
+            .send(ApiVersionsReq)
             .await
             .unwrap();
         assert_eq!(resp.error_code, ErrorCode::from(0));
