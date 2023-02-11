@@ -14,4 +14,6 @@ pub enum ClientError {
     ConfigBuilderError(#[from] ClientConfigBuilderError),
     #[error("TopicCreation error: {errors:?}")]
     TopicCreation { errors: Vec<(TopicName, ErrorCode)> },
+    #[error("TopicDeletion error: {errors:?}")]
+    TopicDeletion { errors: Vec<(TopicName, ErrorCode)> },
 }
