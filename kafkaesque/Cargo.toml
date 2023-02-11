@@ -17,7 +17,7 @@ derive_more = { workspace = true }
 futures = { workspace = true }
 integer-encoding = { workspace = true, features = ["tokio_async"] }
 itertools = { workspace = true }
-kafkaesque-macros = { path = "../kafkaesque-macros" }
+kafkaesque-macros = { path = "../kafkaesque-macros", version = "0.0.5" }
 namewise = { worksapce = true }
 thiserror = { workspace = true }
 tokio = { workspace = true, features = ["io-util", "net"]  }
