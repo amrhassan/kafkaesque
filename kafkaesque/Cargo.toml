@@ -1,6 +1,7 @@
 [package]
 name = "kafkaesque"
-description = "Unofficial Kafka implementations"
+description = "Unofficial Kafka implementations in Rust"
+repository = "https://github.com/amrhassan/kafkaesque"
 version = "0.0.5"
 edition = "2021"
 license = "MIT"
