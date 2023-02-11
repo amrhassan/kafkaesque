@@ -23,7 +23,7 @@ pub struct ApiKeyVersionsReqV0Version {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::formats::{response::ErrorCode, BrokerConnection};
+    use crate::formats::{error_code::ErrorCode, BrokerConnection};
 
     #[tokio::test]
     async fn test_api_versions() {
@@ -31,7 +31,7 @@ mod tests {
             .await
             .unwrap();
         let resp: ApiVersionsResp = conn.send(ApiVersionsReq).await.unwrap();
-        assert_eq!(resp.error_code, ErrorCode::from(0));
+        assert_eq!(resp.error_code, ErrorCode::None);
         assert!(!resp.api_keys.is_empty())
     }
 }

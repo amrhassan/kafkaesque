@@ -69,7 +69,7 @@ impl MetadataClient {
         let errors = resp
             .topics
             .into_iter()
-            .filter(|t| t.err_code != ErrorCode::NONE)
+            .filter(|t| t.err_code != ErrorCode::None)
             .map(|t| (TopicName::from(t.name), t.err_code))
             .collect_vec();
 
@@ -96,7 +96,7 @@ impl MetadataClient {
         let errors = resp
             .topics
             .into_iter()
-            .filter(|t| t.err_code != ErrorCode::NONE)
+            .filter(|t| t.err_code != ErrorCode::None)
             .map(|t| (TopicName::from(t.name), t.err_code))
             .collect_vec();
 

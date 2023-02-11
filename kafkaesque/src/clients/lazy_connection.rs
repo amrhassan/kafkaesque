@@ -87,7 +87,7 @@ mod tests {
             .send(ApiVersionsReq)
             .await
             .unwrap();
-        assert_eq!(resp.error_code, ErrorCode::from(0));
+        assert_eq!(resp.error_code, ErrorCode::None);
         assert!(!resp.api_keys.is_empty())
     }
 }
