@@ -119,7 +119,7 @@ mod tests {
     #[tokio::test]
     async fn test_topic_creation_and_reading_topic_metadata() {
         setup_tracing();
-        let broker_list = BrokerList(vec!["localhost:9092".into()]);
+        let bootstrap_broker_list = BrokerList(vec!["localhost:9092".into()]);
         let client_id = "test-client".into();
         let client_config = ClientConfig {
             bootstrap_broker_list,
