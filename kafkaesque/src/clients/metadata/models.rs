@@ -3,19 +3,19 @@ use derive_more::{Display, From, Into};
 use std::collections::HashMap;
 
 #[derive(Debug, Clone, Copy, From, Into, Display)]
-pub struct NodeId(i32);
+pub struct NodeId(pub i32);
 
 #[derive(Debug, Clone, Copy, From, Into, Display)]
-pub struct PartitionId(i32);
+pub struct PartitionId(pub i32);
 
 #[derive(Debug, Clone, Copy, From, Into, Display)]
-pub struct PartitionCount(i32);
+pub struct PartitionCount(pub i32);
 
 #[derive(Debug, Clone, Copy, From, Into, Display)]
-pub struct ReplicationFactor(i16);
+pub struct ReplicationFactor(pub i16);
 
 #[derive(Debug, Clone, From, Into, Display)]
-pub struct TopicName(String);
+pub struct TopicName(pub String);
 
 #[derive(Debug, Clone, namewise::From)]
 #[namewise_from(from_type = "MetadataRespV0Broker")]
@@ -49,7 +49,7 @@ pub struct Metadata {
 }
 
 #[derive(Debug, Clone)]
-pub struct TopicConfig(HashMap<String, String>);
+pub struct TopicConfig(pub HashMap<String, String>);
 
 pub struct TopicAssignments {
     /// Mapping from PartitionIDs to Broker IDs
