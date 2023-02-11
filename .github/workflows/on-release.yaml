@@ -1,4 +1,4 @@
-name: Publish crates
+name: Create Release
 
 on:
   create:
