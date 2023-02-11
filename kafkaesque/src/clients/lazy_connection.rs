@@ -49,7 +49,7 @@ impl LazyBrokerConnection {
     /// Attempt to connect to any the listed brokers, return the first connection
     /// that gets established.
     async fn connect_to_single_broker(&self) -> Result<BrokerConnection> {
-        let (c, _) = select_ok(self.config.broker_list.iter().map(|address| {
+        let (c, _) = select_ok(self.config.bootstrap_broker_list.iter().map(|address| {
             Box::pin(BrokerConnection::connect(
                 self.config.client_id.clone(),
                 address.as_to_socket_address(),
@@ -76,7 +76,7 @@ mod tests {
         let broker_list = BrokerList(vec!["localhost:9092".into()]);
         let client_id = "test-client".into();
         let client_config = ClientConfig {
-            broker_list,
+            bootstrap_broker_list,
             client_id,
         };
         let conn = LazyBrokerConnection::new(client_config);

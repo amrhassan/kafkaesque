@@ -122,7 +122,7 @@ mod tests {
         let broker_list = BrokerList(vec!["localhost:9092".into()]);
         let client_id = "test-client".into();
         let client_config = ClientConfig {
-            broker_list,
+            bootstrap_broker_list,
             client_id,
         };
         let client = MetadataClient::new(client_config);

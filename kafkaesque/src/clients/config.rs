@@ -6,7 +6,10 @@ use tokio::net::ToSocketAddrs;
 #[derive(Debug, Builder, Clone)]
 #[builder(pattern = "owned")]
 pub struct ClientConfig {
-    pub broker_list: BrokerList,
+    /// List of brokers to bootstrap the client from
+    pub bootstrap_broker_list: BrokerList,
+
+    /// Advertised ID of the client
     pub client_id: ClientId,
 }
 
