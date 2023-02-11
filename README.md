@@ -3,6 +3,6 @@
 [![crates.io](https://img.shields.io/crates/v/kafkaesque.svg)](https://crates.io/crates/kafkaesque)
 [![main](https://github.com/amrhassan/kafkaesque/actions/workflows/main.yaml/badge.svg)](https://github.com/amrhassan/kafkaesque/actions/workflows/main.yaml)
 
-Kafka implementations in Rust
+Kafka implementations in Rust using async IO and [tokio.rs](https://tokio.rs/).
 
-Spec: [protocol](https://kafka.apache.org/protocol) [guide](https://cwiki.apache.org/confluence/display/KAFKA/A+Guide+To+The+Kafka+Protocol)
+Spec: [protocol](https://kafka.apache.org/protocol) [guide](https://cwiki.apache.org/confluence/display/KAFKA/A+Guide+To+The+Kafka+Protocol) [documentation](https://kafka.apache.org/documentation)

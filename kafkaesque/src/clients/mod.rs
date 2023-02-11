@@ -1,8 +1,7 @@
-mod config;
 mod errors;
-mod lazy_connection;
-mod metadata;
+mod metadata_client;
+mod produce_client;
 
-pub use config::*;
 pub use errors::{ClientError, Result};
-pub use metadata::*;
+pub use metadata_client::*;
+pub use produce_client::*;

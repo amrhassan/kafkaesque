@@ -5,9 +5,9 @@ use tokio::net::ToSocketAddrs;
 
 #[derive(Debug, Builder, Clone)]
 #[builder(pattern = "owned")]
-pub struct ClientConfig {
-    /// List of brokers to bootstrap the client from
-    pub bootstrap_broker_list: BrokerList,
+pub struct ConnectionConfig {
+    /// List of brokers to connect to (for bootstrapping or otherwise)
+    pub broker_list: BrokerList,
 
     /// Advertised ID of the client
     pub client_id: ClientId,
@@ -17,6 +17,14 @@ pub struct ClientConfig {
 pub struct BrokerList(pub Vec<BrokerAddress>);
 
 impl BrokerList {
+    pub fn from_hostnames_and_ports(seq: impl IntoIterator<Item = (impl AsRef<str>, u16)>) -> Self {
+        BrokerList(
+            seq.into_iter()
+                .map(|(hostname, port)| BrokerAddress::from_hostname_and_port(hostname, port))
+                .collect(),
+        )
+    }
+
     pub fn iter(&self) -> impl Iterator<Item = &BrokerAddress> {
         self.0.iter()
     }
@@ -33,6 +41,12 @@ impl<'a> From<&'a str> for ClientId {
 
 #[derive(Debug, Clone, From, Into, Display)]
 pub struct BrokerAddress(String);
+
+impl BrokerAddress {
+    pub fn from_hostname_and_port(hostname: impl AsRef<str>, port: u16) -> Self {
+        BrokerAddress(format!("{}:{port}", hostname.as_ref()))
+    }
+}
 
 impl From<&str> for BrokerAddress {
     fn from(value: &str) -> Self {

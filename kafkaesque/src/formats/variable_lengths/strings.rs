@@ -6,6 +6,8 @@ use derive_more::{From, Into};
 use tokio::io::{AsyncReadExt, AsyncWrite, AsyncWriteExt};
 use tracing::trace;
 
+use super::VarInt;
+
 impl<'a> Write for &'a str {
     fn calculate_size(&self) -> i32 {
         i16::SIZE + self.len() as i32
@@ -38,7 +40,7 @@ impl Read for String {
     }
 }
 
-#[derive(Debug, Clone, From, Into)]
+#[derive(Debug, Clone, From, Into, Default)]
 pub struct NullableString(String);
 
 impl Write for NullableString {
@@ -64,5 +66,30 @@ impl Read for NullableString {
         trace!("reading a nullable_string of len {len}");
         reader.read_exact(&mut buf).await?;
         Ok(String::from_utf8(buf)?.into())
+    }
+}
+
+/// A String whos length is encoded as a VarInt
+#[derive(Debug, Clone, From, Into)]
+pub struct VarIntString(String);
+
+impl Write for VarIntString {
+    fn calculate_size(&self) -> i32 {
+        VarInt::from(self.0.len() as i64).calculate_size() + self.0.len() as i32
+    }
+    async fn write_to(&self, writer: &mut (dyn AsyncWrite + Send + Unpin)) -> Result<()> {
+        VarInt::from(self.0.len() as i64).write_to(writer).await?;
+        writer.write_all(self.0.as_bytes()).await?;
+        Ok(())
+    }
+}
+
+impl Read for VarIntString {
+    async fn read_from(reader: &mut (dyn tokio::io::AsyncRead + Send + Unpin)) -> Result<Self> {
+        let len = VarInt::read_from(reader).await?;
+        let mut buf = vec![0u8; i64::from(len) as usize];
+        reader.read_exact(&mut buf).await?;
+        let s = String::from_utf8(buf)?.into();
+        Ok(s)
     }
 }

@@ -2,6 +2,8 @@
 members = ["kafkaesque", "kafkaesque-macros"]
 
 [workspace.dependencies]
+bytes = "1.4.0"
+crc32fast = "1.3.2"
 darling = "0.14.2"
 derive_builder = "0.12.0"
 derive_more = "0.99.17"

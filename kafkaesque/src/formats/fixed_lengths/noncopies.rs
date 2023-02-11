@@ -31,9 +31,6 @@ impl Write for bool {
 // use tokio::io::{AsyncRead, AsyncWrite, AsyncWriteExt};
 
 // #[derive(Debug, Copy, Clone, Display, From, Into)]
-// pub struct VarInt(i32);
-
-// #[derive(Debug, Copy, Clone, Display, From, Into)]
 // pub struct VarLong(i64);
 
 // // #[derive(Debug, Clone, Display, From, Into)]

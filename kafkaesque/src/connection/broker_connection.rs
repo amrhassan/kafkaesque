@@ -1,8 +1,5 @@
-use super::{
-    codec::{Read, Write},
-    request::{CorrelationId, RequestHeader, RequestMessage},
-    Result, DEFAULT_BUF_SIZE,
-};
+use super::{Result, DEFAULT_BUF_SIZE};
+use crate::formats::{CorrelationId, Read, RequestHeader, RequestMessage, Write};
 use std::fmt::Debug;
 use tokio::io::AsyncWriteExt;
 use tokio::{
@@ -12,6 +9,8 @@ use tokio::{
 use tracing::debug;
 
 /// A connection to a single broker
+///
+/// The connection is shut down in the destructor.
 #[derive(Debug)]
 pub struct BrokerConnection {
     next_cid: i32,
@@ -23,6 +22,11 @@ impl BrokerConnection {
     pub async fn connect(client_id: impl Into<String>, addr: impl ToSocketAddrs) -> Result<Self> {
         Self::connect_with_buffer_size(client_id.into(), addr, DEFAULT_BUF_SIZE, DEFAULT_BUF_SIZE)
             .await
+    }
+
+    pub async fn shutdown(mut self) -> Result<()> {
+        self.stream.shutdown().await?;
+        Ok(())
     }
 
     pub async fn connect_with_buffer_size(
@@ -43,6 +47,7 @@ impl BrokerConnection {
         Ok(c)
     }
 
+    /// Send a single request message and read its response.
     pub async fn send<Req: RequestMessage + Write + Debug, Resp: Read + Debug>(
         &mut self,
         message: Req,
@@ -52,6 +57,7 @@ impl BrokerConnection {
         self.read_response().await
     }
 
+    /// Batch-send multiple request messages before reading their responses.
     pub async fn send_many<ReqM: RequestMessage + Write + Debug, Resp: Read + Debug>(
         &mut self,
         messages: impl IntoIterator<Item = ReqM>,
@@ -67,11 +73,6 @@ impl BrokerConnection {
             responses.push(self.read_response().await?);
         }
         Ok(responses)
-    }
-
-    pub async fn shutdown(mut self) -> Result<()> {
-        self.stream.shutdown().await?;
-        Ok(())
     }
 
     async fn write_request<ReqM: RequestMessage + Write + Debug>(

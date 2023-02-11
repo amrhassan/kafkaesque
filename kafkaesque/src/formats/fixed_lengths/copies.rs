@@ -44,6 +44,15 @@ fixed_length_copy_io_impl!(
 );
 
 fixed_length_copy_io_impl!(
+    u8,
+    1,
+    identity,
+    AsyncWriteExt::write_u8,
+    AsyncReadExt::read_u8,
+    identity,
+);
+
+fixed_length_copy_io_impl!(
     i16,
     2,
     identity,

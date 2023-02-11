@@ -9,4 +9,6 @@ pub enum FormatError {
     Utf8Parsing(#[from] FromUtf8Error),
     #[error("IO error: {0}")]
     Io(#[from] std::io::Error),
+    #[error("Found empty seq when was expecting a non-empty")]
+    UnexpectedEmptySeq,
 }

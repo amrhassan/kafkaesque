@@ -23,7 +23,7 @@ pub struct ApiKeyVersionsReqV0Version {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::formats::{error_code::ErrorCode, BrokerConnection};
+    use crate::{connection::BrokerConnection, formats::error_code::ErrorCode};
 
     #[tokio::test]
     async fn test_api_versions() {

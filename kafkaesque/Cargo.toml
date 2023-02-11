@@ -3,24 +3,28 @@ name = "kafkaesque"
 description = "Kafka implementations in Rust (Unofficial)"
 repository = "https://github.com/amrhassan/kafkaesque"
 homepage = "https://github.com/amrhassan/kafkaesque"
+keywords = ["kafka"]
 version = "0.0.15"
 edition = "2021"
 license = "MIT"
 authors = ["Amr Hassan <amr.hassan@gmail.com>"]
 
 [dev-dependencies]
+fastrand = { workspace = true }
 tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
 tracing-subscriber = { workspace = true, features = ["fmt", "env-filter"] }
-fastrand = { workspace = true }
 
 [dependencies]
+bytes = { workspace = true }
+crc32fast = { workspace = true }
 derive_builder = { workspace = true }
 derive_more = { workspace = true }
-futures = { workspace = true }
+futures = { workspace = true, features = ["executor"] }
 integer-encoding = { workspace = true, features = ["tokio_async"] }
 itertools = { workspace = true }
 kafkaesque-macros = { workspace = true }
 namewise = { version = "2.6.6" }
+non-empty-vec = "0.2.3"
 thiserror = { workspace = true }
 tokio = { workspace = true, features = ["io-util", "net"]  }
 tokio-util = { workspace = true, features = ["compat"] }

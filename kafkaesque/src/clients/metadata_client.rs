@@ -1,27 +1,28 @@
-use std::time::Duration;
-
-use itertools::Itertools;
-
-use super::{Metadata, TopicName, TopicSpec};
 use crate::{
-    clients::{lazy_connection::LazyBrokerConnection, ClientConfig, ClientError, Result},
+    clients::{ClientError, Result},
+    config::ConnectionConfig,
+    connection::LazyBrokerConnection,
     formats::{
-        messages::{
+        api::{
             CreateTopicsReqV0, CreateTopicsReqV0CreateTopic, CreateTopicsRespV0, DeleteTopicsReqV0,
             DeleteTopicsRespV0, MetadataReqV0Topic, MetadataRequestV0, MetadataResponseV0,
         },
         ErrorCode,
     },
+    models::{Metadata, TopicName, TopicSpec},
 };
+use derive_more::Constructor;
+use itertools::Itertools;
+use std::time::Duration;
 
 /// Metadata client
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Constructor)]
 pub struct MetadataClient {
     conn: LazyBrokerConnection,
 }
 
 impl MetadataClient {
-    pub fn new(config: ClientConfig) -> Self {
+    pub fn create(config: ConnectionConfig) -> Self {
         MetadataClient {
             conn: LazyBrokerConnection::new(config),
         }
@@ -106,26 +107,33 @@ impl MetadataClient {
             Ok(())
         }
     }
+
+    pub async fn shutdown(self) -> Result<()> {
+        self.conn.shutdown().await?;
+        Ok(())
+    }
 }
 
 #[cfg(test)]
 mod tests {
+    use crate::{
+        clients::*,
+        config::{BrokerList, ConnectionConfig},
+        models::{TopicName, TopicSpec},
+        tests::setup_tracing,
+    };
     use std::time::Duration;
-
-    use crate::clients::*;
-    use tracing::info;
-    use tracing_subscriber::{fmt, prelude::*, EnvFilter};
 
     #[tokio::test]
     async fn test_topic_creation_and_reading_topic_metadata() {
         setup_tracing();
-        let bootstrap_broker_list = BrokerList(vec!["localhost:9092".into()]);
+        let broker_list = BrokerList(vec!["localhost:9092".into()]);
         let client_id = "test-client".into();
-        let client_config = ClientConfig {
-            bootstrap_broker_list,
+        let client_config = ConnectionConfig {
+            broker_list,
             client_id,
         };
-        let client = MetadataClient::new(client_config);
+        let client = MetadataClient::create(client_config);
 
         let topic_name = TopicName::from(format!("KAFKAESQUE_TEST_{}", fastrand::u32(0..9999)));
 
@@ -148,17 +156,7 @@ mod tests {
             .delete_topics([topic_name], Duration::from_secs(5))
             .await
             .unwrap();
-    }
 
-    pub fn setup_tracing() {
-        let tracing_fmt_layer = fmt::layer().with_target(false).with_ansi(true);
-        let tracing_filter_layer = EnvFilter::try_from_default_env()
-            .or_else(|_| EnvFilter::try_new("debug"))
-            .expect("Failed to set global logging filter");
-        tracing_subscriber::registry()
-            .with(tracing_filter_layer)
-            .with(tracing_fmt_layer)
-            .init();
-        info!("Initiated tracing");
+        client.shutdown().await.unwrap()
     }
 }

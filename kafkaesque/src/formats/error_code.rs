@@ -119,6 +119,16 @@ pub enum ErrorCode {
     Unsupported(i16),
 }
 
+impl ErrorCode {
+    pub fn is_okay(self) -> bool {
+        matches!(self, ErrorCode::None)
+    }
+
+    pub fn is_not_okay(self) -> bool {
+        !self.is_okay()
+    }
+}
+
 impl Write for ErrorCode {
     fn calculate_size(&self) -> i32 {
         i16::SIZE
