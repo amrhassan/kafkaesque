@@ -1,7 +1,7 @@
 use crate::formats::api_keys::ApiKey;
 use crate::formats::codec::{Read, Write};
+use crate::formats::error_code::ErrorCode;
 use crate::formats::request::{ApiVersion, RequestMessage};
-use crate::formats::response::ErrorCode;
 
 #[derive(Debug, Write, RequestMessage)]
 #[request_message(version = 0, key = "Metadata")]
