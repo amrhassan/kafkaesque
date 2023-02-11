@@ -28,8 +28,12 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - uses: Swatinem/rust-cache@v2
-    - id: release
-      uses: actions-rs/cargo@v1
+    - uses: actions-rs/cargo@v1
       with:
         command: publish
-        args: --token ${{ secrets.CRATES_TOKEN }}
+        args: -p kafkaesque-macros --token ${{ secrets.CRATES_TOKEN }}
+    - uses: actions-rs/cargo@v1
+      with:
+        command: publish
+        args: -p kafkaesque --token ${{ secrets.CRATES_TOKEN }}
+
