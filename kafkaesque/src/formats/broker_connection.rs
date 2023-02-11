@@ -103,7 +103,7 @@ impl BrokerConnection {
             api_key: M::API_KEY,
             api_version: M::API_VERSION,
             cid: self.get_next_cid(),
-            client_id: self.client_id.clone().into(),
+            client_id: self.client_id.clone(),
         }
     }
 
