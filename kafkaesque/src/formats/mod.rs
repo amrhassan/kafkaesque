@@ -15,6 +15,7 @@ pub use codec::{FixedLength, Read, Write};
 pub use errors::{FormatError, Result};
 pub use request::{ApiVersion, RequestMessage};
 pub use response::ErrorCode;
+pub use variable_lengths::NullableString;
 
 /// Default TCP buffer size for [BrokerConnection] in bytes
 pub static DEFAULT_BUF_SIZE: usize = 8 * 1024;

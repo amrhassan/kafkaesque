@@ -10,6 +10,7 @@ authors = ["Amr Hassan <amr.hassan@gmail.com>"]
 [dev-dependencies]
 tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
 tracing-subscriber = { workspace = true, features = ["fmt", "env-filter"] }
+fastrand = { workspace = true }
 
 [dependencies]
 derive_builder = { workspace = true }

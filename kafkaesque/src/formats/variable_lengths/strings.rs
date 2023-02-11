@@ -2,6 +2,7 @@ use crate::formats::{
     codec::{FixedLength, Read, Write},
     Result,
 };
+use derive_more::{From, Into};
 use tokio::io::{AsyncReadExt, AsyncWrite, AsyncWriteExt};
 use tracing::trace;
 
@@ -34,5 +35,34 @@ impl Read for String {
         trace!("reading a string of len {len}");
         reader.read_exact(&mut buf).await?;
         Ok(String::from_utf8(buf)?)
+    }
+}
+
+#[derive(Debug, Clone, From, Into)]
+pub struct NullableString(String);
+
+impl Write for NullableString {
+    fn calculate_size(&self) -> i32 {
+        i16::SIZE + self.0.len() as i32
+    }
+    async fn write_to(&self, writer: &mut (dyn AsyncWrite + Send + Unpin)) -> Result<()> {
+        if self.0.is_empty() {
+            (-1i16).write_to(writer).await
+        } else {
+            (self.0.len() as i16).write_to(writer).await?;
+            writer.write_all(self.0.as_bytes()).await?;
+            Ok(())
+        }
+    }
+}
+
+impl Read for NullableString {
+    async fn read_from(reader: &mut (dyn tokio::io::AsyncRead + Send + Unpin)) -> Result<Self> {
+        trace!("reading nullable_string len");
+        let len = i16::read_from(reader).await?.max(0);
+        let mut buf = vec![0u8; len as usize];
+        trace!("reading a nullable_string of len {len}");
+        reader.read_exact(&mut buf).await?;
+        Ok(String::from_utf8(buf)?.into())
     }
 }
