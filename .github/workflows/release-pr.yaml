@@ -31,3 +31,4 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           version: ${{ inputs.version }}
           crate-release-all: true
+          pr-label: release
