@@ -26,5 +26,4 @@ jobs:
         command: build
         args: --all-features
     - name: Test
-      run: |
-        make test-ci
+      run: make test-ci

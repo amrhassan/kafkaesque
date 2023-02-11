@@ -1,39 +1,25 @@
 name: Release crates
+
 on:
-  pull_request:
-    types: closed
-    branches: [main]
+  create:
+    tags:
+      - v*
 
 jobs:
-  info:
-    if: github.event.pull_request.merged
-    outputs:
-      is-release: ${{ steps.meta.outputs.is-release }}
-      crate: ${{ steps.meta.outputs.crate-names }}
-      version: ${{ steps.meta.outputs.version-actual }}
-      notes: ${{ steps.meta.outputs.notes }}
-    runs-on: ubuntu-latest
-    steps:
-    - id: meta
-      uses: cargo-bins/release-meta@v1
-      with:
-        event-data: ${{ toJSON(github.event) }}
-        extract-notes-under: '### Release notes'
-
-  release:
-    needs: info
-    if: needs.info.outputs.is-release == 'true'
+  publish:
+    strategy:
+      fail-fast: true
+      max-parallel: 1
+      matrix:
+        crate: [kafkaesque-macros, kafkaesque]
     name: Release
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
     - uses: Swatinem/rust-cache@v2
+    - name: Test
+      run: make test-ci
     - uses: actions-rs/cargo@v1
       with:
         command: publish
-        args: -p kafkaesque-macros --token ${{ secrets.CRATES_TOKEN }}
-    - uses: actions-rs/cargo@v1
-      with:
-        command: publish
-        args: -p kafkaesque --token ${{ secrets.CRATES_TOKEN }}
-
+        args: -p ${{ matrix.crate }} --token ${{ secrets.CRATES_TOKEN }}
