@@ -1,5 +1,5 @@
 pre-release-commit-message = "Release {{version}}"
 tag-message = "Release {{crate_name}} version {{version}}"
 publish = false
-tag-name = "kafkaesque-v{{crate_version}}"
+tag-name = "kafkaesque-v{{version}}"
 shared-version = true
