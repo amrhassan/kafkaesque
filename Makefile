@@ -2,6 +2,7 @@
 
 format:
 	cargo fmt
+	cargo tomlfmt 2> /dev/null
 
 f: format
 
