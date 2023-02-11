@@ -1,6 +1,6 @@
 [package]
 name = "kafkaesque-macros"
-description = "Unofficial Kafka implementations in Rust"
+description = "Kafka implementations in Rust (Unofficial)"
 repository = "https://github.com/amrhassan/kafkaesque"
 homepage = "https://github.com/amrhassan/kafkaesque"
 version = "0.0.15"
