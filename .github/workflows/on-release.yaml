@@ -22,7 +22,7 @@ jobs:
       max-parallel: 1
       matrix:
         crate: [kafkaesque-macros, kafkaesque]
-    name: Release
+    name: Publish crate
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -34,7 +34,7 @@ jobs:
 
   gh-release:
     needs: test
-    name: Release
+    name: Create Github Release
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
